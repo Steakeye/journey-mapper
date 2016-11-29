@@ -1,0 +1,24 @@
+<div id="zipFormDialog" class="dialog zip-dialog">
+    <div class="dialog__inner">
+        <div id="dialog-zip" class="dialog__content" tabindex="1" role="dialog"
+             aria-labelledby="heading-dialog-zip"
+             aria-describedby="message-dialog-zip">
+            <div id="message-dialog-zip" class="dialog__body">
+                <h2 class="dialog__heading" id="heading-dialog-zip">Generate a Zip Archive</h2>
+                <form id="zipForm" class="dialog__form">
+                    <section class="dialog__table group">
+                        <fieldset id="fieldset-zipFormUpload" class="dialog__cell dialog__cell-left">
+                            <input type="file" id="zipFormUpload" accept="text/html, application/x-javascript, text/css, image/*" multiple hidden>
+                            <label for="zipFormUpload" class="button">Select files</label>
+                        </fieldset>
+
+                        <fieldset id="fieldset-zipFormDownload" class="dialog__cell">
+                            <button id="zipFormSubmit" type="submit" class="button">Create zip file</button>
+                        </fieldset>
+                    </section>
+                </form>
+                <em class="status--text"></em><a class="" href="#" data-dialog-action="close" data-dialog-target="dialog-zip">close</a>
+            </div>
+        </div>
+    </div>
+</div>

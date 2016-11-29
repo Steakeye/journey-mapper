@@ -1,0 +1,134 @@
+.dialog legend {
+    border: 0;
+    padding: 0;
+}
+
+.dialog button, .dialog  input, .dialog  select, .dialog  textarea {
+    font-family: inherit;
+    font-size: 100%;
+    margin: 0;
+}
+
+.dialog button, .dialog  input {
+    line-height: normal;
+}
+
+.dialog button, .dialog  html input[type="button"], .dialog  input[type="reset"], .dialog  input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+.dialog button[disabled], .dialog  input[disabled] {
+    cursor: default;
+}
+
+.dialog input[type="checkbox"], .dialog  input[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.dialog button::-moz-focus-inner, .dialog  input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+.dialog textarea {
+    overflow: auto;
+    vertical-align: top;
+}
+
+.dialog button, .dialog  .button {
+    background-color: #00823b;
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0.35em 0.5em 0.15em 0.5em;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    box-shadow: 0 2px 0 #003618;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 19px;
+    line-height: 1.31579;
+    font-weight: 400;
+    text-transform: none;
+    margin: 0 .78947em 0 0;
+}
+
+.dialog button:visited, .dialog .button:visited {
+    background-color: #00823b;
+}
+
+.dialog button:hover, .dialog button:focus, .dialog .button:hover, .dialog .button:focus {
+    background-color: #00692f;
+}
+
+.dialog button:active, .dialog .button:active {
+    top: 2px;
+    box-shadow: 0 0 0 #00823b;
+}
+
+.dialog button.disabled, .dialog button[disabled="disabled"], .dialog button[disabled], .dialog .button.disabled, .dialog .disabled, .dialog .button[disabled="disabled"], .dialog [disabled="disabled"], .dialog .button[disabled] {
+    zoom: 1;
+    filter: alpha(opacity=50);
+    opacity: .5;
+}
+
+.dialog button.disabled:hover, .dialog button[disabled="disabled"]:hover, .dialog button[disabled]:hover, .dialog .button.disabled:hover, .dialog .disabled, .dialog .button[disabled="disabled"]:hover, .dialog [disabled="disabled"], .dialog .button[disabled]:hover {
+    cursor: default;
+    background-color: #00823b;
+}
+
+.dialog button.disabled:active, .dialog button[disabled="disabled"]:active, .dialog button[disabled]:active, .dialog .button.disabled:active, .dialog .disabled, .dialog .button[disabled="disabled"]:active, .dialog [disabled="disabled"], .dialog .button[disabled]:active {
+    top: 0;
+    box-shadow: 0 2px 0 #003618;
+}
+
+.dialog button:link, .dialog button:hover, .dialog button:focus, .dialog button:visited, .dialog .button:link, .dialog .button:hover, .dialog .button:focus, .dialog .button:visited {
+    color: #fff;
+}
+
+.dialog button:before, .dialog .button:before {
+    content: "";
+    height: 110%;
+    width: 100%;
+    display: block;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.dialog button:active:before, .dialog .button:active:before {
+    top: -10%;
+    height: 120%
+}
+
+.dialog @media (max-width: 640px) {
+    button, .dialog .button {
+        font-size: 16px;
+        line-height: 1.25;
+    }
+}
+
+.dialog .button--spaced {
+    margin: 0 .52632em 0 .52632em;
+}
+
+.dialog .button--padded {
+    padding-left: 1.57895em;
+    padding-right: 1.57895em;
+}
+
+.dialog .label--small {
+    font-size: .8em;
+    white-space: nowrap;
+}
+
+.dialog .label--small input[type="checkbox"] {
+    margin-right: .2em;
+}

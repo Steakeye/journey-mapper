@@ -1,0 +1,40 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title>html-scraper index page</title>
+</head>
+<body class="index-page">
+<h1>User journey‘s:</h1>
+<ul class="link-list">
+
+</ul>
+
+<div id="indexImageOverlayDialog" class="dialog index-dialog dialog--hidden">
+    <div class="dialog__inner">
+        <div id="dialog-imageOverlay" class="dialog__content" tabindex="1" role="dialog"
+             aria-labelledby="heading-dialog-imageOverlay" aria-describedby="message-dialog-imageOverlay" hidden>
+            <div id="message-dialog-imageOverlay">
+                <h2 class="centred" id="heading-dialog-imageOverlay"></h2>
+                <nav class="snapshot__navigation">
+                    <a class="snapshot--previous" href="#" data-dialog-action="open" data-dialog-target="">previous</a>
+                    <span class="separator--pipe">|</span>
+                    <a class="snapshot--next" href="#" data-dialog-action="open" data-dialog-target="">next</a>
+                    <a class="snapshot--close" href="#" data-dialog-action="close" data-dialog-target="dialog-imageOverlay">close</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+
+<!--<script src="../../jquery/jquery.min.1.12.3.js"></script>-->
+<!--<script src="../js/dialog.js"></script>-->
+
+<script id="init">
+    $(document).on('ready', function() {
+      var $dialog = new dialog();
+      $dialog.init();
+    });
+</script>
+</body>
+</html>

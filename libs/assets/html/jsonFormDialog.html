@@ -1,0 +1,33 @@
+
+<div id="jsonFormDialog" class="dialog json-dialog">
+    <div class="dialog__inner">
+        <div id="dialog-json" class="dialog__content" tabindex="1" role="dialog"
+             aria-labelledby="heading-dialog-json"
+             aria-describedby="message-dialog-json">
+            <div id="message-dialog-json" class="dialog__body">
+                <h2 class="dialog__heading" id="heading-dialog-json">Upload a config file</h2>
+                <form id="jsonForm" class="dialog__form">
+                    <section class="dialog__table group">
+                        <fieldset id="fieldset-jsonFormUpload" class="dialog__cell dialog__cell-left">
+                            <input type="file" id="jsonFormUpload" accept="application/json" hidden>
+                            <label for="jsonFormUpload" class="button">Select config file</label>
+                        </fieldset>
+
+                        <fieldset id="fieldset-jsonFormModule" class="dialog__cell dialog__cell-middle">
+                            <input type="file" id="jsonFormModule" accept="application/x-javascript" multiple hidden>
+                            <label for="jsonFormModule" class="button">Select module file(s)</label>
+                        </fieldset>
+
+                        <fieldset id="fieldset-jsonFormDownload" class="dialog__cell dialog__cell-right">
+                            <button id="jsonFormSubmit" type="submit" class="button">Start asset download</button>
+                        </fieldset>
+                    </section>
+                    <section class="dialog__table group">
+                        <em class="status--text dialog__cell"></em>
+                        <a class="" href="#" data-dialog-action="close" data-dialog-target="dialog-json">close</a>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

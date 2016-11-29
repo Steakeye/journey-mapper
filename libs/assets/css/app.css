@@ -1,0 +1,297 @@
+html .dialog, body .dialog, .dialog button, .dialog input {
+    font-family: Arial, sans-serif
+}
+
+body .dialog {
+    color: #0b0c0c;
+    line-height: 1.5;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased
+}
+
+body.scroll-off {
+    position: fixed;
+    width: 100%;
+}
+
+.dialog fieldset {
+    border: none;
+    padding: 0
+}
+
+.dialog a:visited, .dialog .link-style:visited, .dialog .button--link-style:visited {
+    color: #4c2c92
+}
+
+.dialog a:hover, .dialog .link-style:hover, .dialog .button--link-style:hover {
+    color: #2e8aca
+}
+
+.dialog a:active, .dialog .link-style:active, .dialog .button--link-style:active {
+    color: #2e8aca
+}
+
+.dialog__heading {
+    margin-top: 0;
+    text-align: center;
+}
+.dialog__form {
+    width: 100%;
+}
+.dialog__table {
+    display: flex;
+    width: 100%;
+    height:100%;
+    margin: 0 auto 1em;
+    text-align: center;
+    overflow: auto
+}
+.dialog__cell {
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    width: 32%;
+    height:100%;
+    margin: 0 auto;
+}
+
+.dialog__cell .button {
+    padding-bottom: 0.5em;
+}
+
+.dialog__cell-right {
+    margin-right: 0;
+}
+
+.dialog__table:nth-child(2) .dialog__cell {
+    width:49%;
+    text-align: left;
+}
+
+ol.scraperActions {
+    list-style-type: decimal;
+}
+
+.dialog .label--inline {
+    display: inline-block;
+    margin-top: 0.2em;
+    font-size: 1em;
+}
+
+.dialog .label--inline-right {
+    margin-left: 0.5em;
+}
+
+.dialog .label--inline-left {
+    margin-right: 0.5em;
+}
+
+.dialog .button--link-style {
+    font-size: 1em;
+    background: none;
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dialog .button--link-style:focus {
+    outline: thin dotted;
+}
+
+.dialog .button--link-style:active, .dialog .button--link-style:hover {
+    outline: 0;
+}
+
+.dialog .button--link-style {
+    color: #005ea5;
+}
+
+.dialog .button--link-style:visited {
+    color: #4c2c92;
+}
+
+.dialog .button--link-style:hover, .dialog .button--link-style:active {
+    color: #2e8aca;
+}
+
+.dialog .button--link-style:hover, .dialog .button--link-style:focus, .dialog .button--link-style:active {
+    background: none;
+    text-decoration: underline;
+}
+
+.dialog .button--link-style {
+    margin: 0;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.dialog .dialog .group:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+.dialog a[data-dialog-action] {
+    position: absolute;
+    right: 5%;
+    top: 5%;
+}
+
+.dialog .centred {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.dialog {
+    background-color: rgba(89, 89, 89, 0.7);
+    left: 0;
+    overflow: scroll;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+.dialog.dialog--hidden {
+    clip: rect(0.05263em 0.05263em 0.05263em 0.05263em);
+    clip: rect(0.05263em, 0.05263em, 0.05263em, 0.05263em);
+    border: 0;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    z-index: 0;
+}
+
+.dialog.dialog--hidden:focus {
+    clip: auto;
+    height: auto;
+    overflow: auto;
+    position: relative;
+    width: auto;
+}
+
+.dialog .dialog__content {
+    padding: 0.36842em 1.68421em;
+    position: static;
+}
+
+.dialog .dialog__content:focus {
+    overflow: auto;
+    outline: 3px solid #FFBF47;
+}
+
+@media (max-width: 640px) {
+    .dialog .dialog__content [role="button"][data-dialog-action="close"] {
+        width: 100%;
+    }
+}
+
+.dialog .dialog__inner {
+    background-color: #fff;
+    border: 0.26318em solid #0b0c0c;
+    left: 0;
+    margin: 6.84211em auto 0;
+    max-width: 90%;
+    overflow-y: auto;
+    padding: 0.42105em;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+@media (min-width: 769px) {
+    .dialog .dialog__inner {
+        margin: 6.84211em 25% 0;
+        max-width: 37.89474em;
+    }
+}
+
+.dialog .float--none {
+    float: none;
+}
+
+.dialog .full-width {
+    width: 100%;
+}
+
+.dialog .status--text {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    font-size: .8em;
+    height: 2em;
+}
+
+.index-dialog .label--small {
+    text-align: left;
+}
+
+.index-page .image-block {
+    overflow: auto;
+    display: flex;
+}
+
+.index-page .image-block img {
+    vertical-align: top;
+    padding: 1em;
+    background-color: #808080;
+}
+
+.index-page .image-block li {
+    display: inline-block;
+    position: relative;
+    padding: 0;
+    margin: 0 1em 2em 0;
+}
+
+.index-page .link-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.index-page .link-list > li {
+    padding: .1em 1em;
+}
+
+.index-page .link-list > li:nth-child(even) {
+    background-color: #D3D3D3;
+}
+.index-page [data-dialog-action="open"] {
+    position: absolute;
+    top: 100%;
+}
+
+.index-page .index-dialog .image--snapshot {
+    width: 100%;
+}
+
+.index-page .snapshot__navigation {
+    position: absolute;
+    top: 1%;
+    left: 5%;
+    width: 95%;
+}
+
+.index-page .snapshot__navigation [data-dialog-action="open"] {
+    position: relative;
+    top: auto;
+    right: auto;
+}
+
+.index-page .snapshot__navigation .separator--pipe {
+    margin: 0 .5em;
+}
+
+.index-page .button {
+    margin-left: 1em;
+    min-width: 4em;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
