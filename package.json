@@ -1,0 +1,50 @@
+{
+  "title": "journey-mapper",
+  "name": "journey-mapper",
+  "version": "0.0.1",
+  "description": "",
+  "main": "",
+  "author": {
+    "name": "Matt Pepper",
+    "email": "mattcpepper@gmail.com",
+    "url": "http://github.com/mattpepper/"
+  },
+  "contributors": [
+    {
+      "name": "Andrew Keats",
+      "email": "steakeye.studios@gmail.com",
+      "url": "https://github.com/Steakeye"
+    }
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattpepper/journey-mapper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mattpepper/journey-mapper/issues"
+  },
+  "devDependencies": {
+    "@types/Blob": "file:custom/@types/Blob",
+    "@types/file-saver": "0.0.0",
+    "@types/html2canvas": "^0.5.32",
+    "@types/jquery": "^2.0.34",
+    "@types/jszip": "0.0.31",
+    "blob.js": "^1.0.1",
+    "file-saver": "^1.3.3",
+    "jszip": "^3.1.3",
+    "jszip-utils": "0.0.2",
+    "readwrite-gif": "^0.3.1"
+  },
+  "scripts": {
+    "build:ts": "tsc"
+  },
+  "homepage": "http://html2canvas.hertzen.com",
+  "license": "MIT",
+  "dist": {},
+  "dependencies": {
+    "@types/es6-promise": "0.0.32"
+  }
+}

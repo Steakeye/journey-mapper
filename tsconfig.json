@@ -1,12 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "umd",
-    "target": "es5",
-    "rootDir": "src",
-    "outDir": "bin",
-  },
-  "exclude": [
-    "node_modules",
-    "libs"
-  ]
+    "compilerOptions": {
+        "module": "umd",
+        "target": "es5",
+        "rootDir": "src",
+        "outDir": "bin",
+        "noImplicitAny": false,
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules",
+        "libs"
+    ]
 }

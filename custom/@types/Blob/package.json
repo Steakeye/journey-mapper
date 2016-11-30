@@ -1,0 +1,19 @@
+{
+  "name": "@types/Blob",
+  "version": "0.0.1",
+  "typescript": {
+    "definition": "index.d.ts"
+  } ,
+  "description": "TypeScript definitions for Blob.js",
+  "license": "MIT",
+  "author": "Matt Pepper <https://github.com/mattpepper>",
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattpepper/journey-mapper.git"
+  },
+  "scripts": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "typings": "index.d.ts"
+}
