@@ -2,31 +2,26 @@
   "title": "journey-mapper",
   "name": "journey-mapper",
   "version": "0.0.1",
-  "description": "",
-  "main": "",
-  "author": {
-    "name": "Matt Pepper",
-    "email": "mattcpepper@gmail.com",
-    "url": "http://github.com/mattpepper/"
-  },
+  "description": "Maps user journey by downloading static html + asset.",
+  "main": "bin/index.js",
+  "author": "Matt Pepper <mattcpepper@gmail.com> (http://github.com/mattpepper/)",
   "contributors": [
-    {
-      "name": "Andrew Keats",
-      "email": "steakeye.studios@gmail.com",
-      "url": "https://github.com/Steakeye"
-    }
+    "Andrew Keats <steakeye.studios@gmail.com> (https://github.com/Steakeye)"
   ],
   "engines": {
     "node": ">=4.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mattpepper/journey-mapper.git"
+    "url": "git+https://github.com/mattpepper/journey-mapper.git"
   },
   "bugs": {
     "url": "https://github.com/mattpepper/journey-mapper/issues"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.0",
+    "typescript": "^2.0.3",
     "@types/Blob": "file:custom/@types/Blob",
     "@types/file-saver": "0.0.0",
     "@types/html2canvas": "^0.5.32",
@@ -45,6 +40,17 @@
   "license": "MIT",
   "dist": {},
   "dependencies": {
-    "@types/es6-promise": "0.0.32"
-  }
+    "@types/es6-promise": "0.0.32",
+    "commander": "^2.9.0"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [
+    "HTML",
+    "Journey",
+    "Crawler",
+    "Mapping",
+    "Flow"
+  ]
 }
