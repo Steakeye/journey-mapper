@@ -4,7 +4,8 @@
 (function(aScope: any) {
     function isNode(aContext: any) {
         let hasTrueGlobal = global && (aContext === global) && (aContext === global.global),
-            hasNotTrueWindow = !window || ((aContext !== window) && !window.window);
+            hasNotTrueWindow = typeof window === 'undefined' || ((aContext !== window) && !window.window);
+        var tB = false;
 
         return hasTrueGlobal && hasNotTrueWindow;
     }
@@ -14,5 +15,6 @@
         console.log('Run CLI code...');
     } else {
         //Initialise browser code
+        console.log('Run browser code...');
     }
 })(this)

@@ -24,7 +24,7 @@ interface Config {
 }
 
 module cli {
-    class CLI {
+    export class CLI {
         public static DEFAULT_CONFIG_PATH: string = process.cwd() + '/jmnconfig.json';
 
         private static SOURCE_PATH_NOT_FOUND: string = "Source path not found";
