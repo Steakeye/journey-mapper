@@ -34,6 +34,7 @@
     "readwrite-gif": "^0.3.1"
   },
   "scripts": {
+    "start": "node bin/index.js",
     "build:ts": "tsc"
   },
   "homepage": "http://html2canvas.hertzen.com",
