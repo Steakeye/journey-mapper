@@ -4,6 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as argumentParser from 'commander';
+import { IJourneys } from '../interfaces/IJourney'
 
 /*import FileConverter from './m2n/FileConverter';
 import {FormatTranslator, ExternalConversion} from './m2n/FormatTranslator';
@@ -19,8 +20,7 @@ interface PathResolution {
     valid: boolean;
 }
 
-interface Config {
-    customTranslations: ExternalConversion[];
+interface Config extends IJourneys {
 }
 
 module cli {
@@ -30,7 +30,7 @@ module cli {
         private static SOURCE_PATH_NOT_FOUND: string = "Source path not found";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
 
-        constructor(cliArgs: string) {
+        constructor(cliArgs: string[]) {
             let sourcePath: string,
                 outputPath: string,
                 configPath: string;
@@ -61,14 +61,13 @@ module cli {
             this.tryToLoadConfig(configPath);
         }
 
-        public convertFiles(): void {
+/*        public convertFiles(): void {
             let fileConverter: FileConverter,
                 pathMapper: PathMapper,
-                fileMappings: MappingPair[],
-                customTranslations = this.customConfig ? this.customConfig.customTranslations : undefined;
+                fileMappings: MappingPair[];
 
             function convert(aFrom: string, aTo: string) {
-                fileConverter = new FileConverter(aFrom, aTo, new FormatTranslator(customTranslations));
+                fileConverter = new FileConverter(aFrom, aTo, new FormatTranslator());
                 fileConverter.convert();
             }
 
@@ -86,7 +85,7 @@ module cli {
                     convert(aMapping.from, aMapping.to);
                 });
             }
-        }
+        }*/
 
         private sourcePath: string;
         private outputPath: string;

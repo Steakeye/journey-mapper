@@ -2,12 +2,15 @@
  * Created by steakeye on 07/12/16.
  */
 (function(aScope: any) {
-    function isNode(aContext: any) {
-        let hasTrueGlobal = global && (aContext === global) && (aContext === global.global),
-            hasNotTrueWindow = typeof window === 'undefined' || ((aContext !== window) && !window.window);
-        var tB = false;
+    function hasTrueGlobal(aThis: Window | NodeJS.Global): boolean {
+        var tGlobal = typeof global !== 'undefined' ? global: undefined;
+        return tGlobal && (aThis === tGlobal) && (aThis === tGlobal.global);
+    }
 
-        return hasTrueGlobal && hasNotTrueWindow;
+    function isNode(aContext: any): Boolean {
+        let hasNotTrueWindow = typeof window === 'undefined' || ((aContext !== window) && !window.window);
+
+        return hasTrueGlobal(this) && hasNotTrueWindow;
     }
 
     if (isNode(aScope)) {
