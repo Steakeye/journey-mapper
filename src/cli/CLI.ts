@@ -40,14 +40,14 @@ module cli {
 
             //Set up the CLI interface then process the arguments in order to get the data/instructions
             argumentParser.version('0.0.1')
-                .option('-J, --journey [path]', 'JSON file describing the journeys', process.cwd())
+                .option('-J, --journey [path]', 'JSON file describing the journeys')
                 .option('-O, --output [path]', 'Location to save the packaged journeys')
                 .option('-C, --config [path]', 'Location of json config file to load. Defaults to jmconfig.json in root', CLI.DEFAULT_CONFIG_PATH)
                 .parse(cliArgs);
 
             //let CLI:CLI = new CLI((<any>cliArgs).source, (<any>cliArgs).output, (<any>cliArgs).config);
 
-            sourcePath = (<any>argumentParser).source;
+            sourcePath = (<any>argumentParser).journey;
             outputPath = (<any>argumentParser).output;
             configPath = (<any>argumentParser).config;
 
@@ -152,4 +152,4 @@ module cli {
     }
 }
 
-export default cli.CLI;
+export = cli.CLI;

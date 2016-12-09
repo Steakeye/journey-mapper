@@ -16,6 +16,8 @@
     if (isNode(aScope)) {
         //Run CLI code
         console.log('Run CLI code...');
+        const CLI = require('./cli/CLI');
+        let cli = new CLI(process.argv);
     } else {
         //Initialise browser code
         console.log('Run browser code...');
