@@ -7,12 +7,9 @@
     "name": "Google Home Page",
     "description": "We just need to confirm who you are. Start page.",
     "url": "http://localhost:9938/mdtp/registration?origin=ma&completionURL=/foo&failureURL=/fail&confidenceLevel=200"
+    "pageMatcher": "",
+    "action": "./path/to/steps.js"
   },
-    {
-      "id": "doodle",
-      "name": "Doodle page",
-      "description": "Here we are on the Google Doodle view",
-      "url": "http://localhost:9938/mdtp/designatory-details/"
-    }
+  "../pages/doodle_page.json"
   ]
 }

@@ -4,7 +4,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as argumentParser from 'commander';
-import ErrorHandler from '../core/ErrorHandler';
+import ErrorHandler from './ErrorHandler';
+import { JSONResolver } from './JSONResolver';
 import { IJourneys } from '../interfaces/IJourney';
 
 /*import FileConverter from './m2n/FileConverter';
@@ -28,40 +29,48 @@ module cli {
     export class CLI {
         public static DEFAULT_CONFIG_PATH: string = process.cwd() + '/jmnconfig.json';
 
-        private static SOURCE_PATH_NOT_FOUND: string = "Source path not found";
-        private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified";
+        private static JOURNEYS_FILE_ERROR: string = "Please specify a location from which to load journeys json.";
+        private static JOURNEYS_PATH_NOT_FOUND: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
+        private static JOURNEYS_FILE_NOT_FOUND: string = "Journeys JSON not found. " + CLI.JOURNEYS_FILE_ERROR;
+        private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified. Please specify a location to save mapped journeys.";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
 
         constructor(cliArgs: string[]) {
-            let sourcePath: string,
+            let journeysPath: string,
                 outputPath: string,
-                configPath: string;
+                configPath: string,
+                journey;
 
             // console.log("CLI");
             // console.log(arguments);
 
             //Set up the CLI interface then process the arguments in order to get the data/instructions
             argumentParser.version('0.0.1')
-                .option('-J, --journey [path]', 'JSON file describing the journeys')
+                .option('-J, --journeys [path]', 'JSON file describing the journeys')
                 .option('-O, --output [path]', 'Location to save the packaged journeys')
                 .option('-C, --config [path]', 'Location of json config file to load. Defaults to jmconfig.json in root', CLI.DEFAULT_CONFIG_PATH)
                 .parse(cliArgs);
 
-            //let CLI:CLI = new CLI((<any>cliArgs).source, (<any>cliArgs).output, (<any>cliArgs).config);
-
-            sourcePath = (<any>argumentParser).journey;
+            journeysPath = (<any>argumentParser).journeys;
             outputPath = (<any>argumentParser).output;
             configPath = (<any>argumentParser).config;
 
+            //TODO: Get config to establish  outpus path and journeys path
+            this.tryToLoadConfig(configPath);
+
             if (!outputPath) { //undefined or empty string
-                //this.assignSourceToBothPaths(sourcePath)
+                //this.assignSourceToBothPaths(journeysPath)
                 ErrorHandler(CLI.OUTPUT_PATH_NOT_SPECIFIED);
+            } else if (!journeysPath) { //undefined or empty string
+                //this.assignSourceToBothPaths(journeysPath)
+                ErrorHandler(CLI.JOURNEYS_PATH_NOT_FOUND);
             } else {
-                this.assignPathValues(sourcePath, outputPath);
+                this.assignPathValues(journeysPath, outputPath);
             }
+
             this.setOutputType();
 
-            this.tryToLoadConfig(configPath);
+            this.parseJourneys();
         }
 
 /*        public convertFiles(): void {
@@ -104,10 +113,10 @@ module cli {
                 try {
                     this.customConfig = require(resolvedPath.path);
                 } catch (aErr) {
-                    this.exitWithError(aErr);
+                    ErrorHandler(aErr);
                 }
             } else if (resolvedPath.path !== CLI.DEFAULT_CONFIG_PATH) {
-                this.exitWithError(CLI.CONFIG_PATH_NOT_FOUND);
+                ErrorHandler(CLI.CONFIG_PATH_NOT_FOUND);
             }
         }
 
@@ -137,7 +146,7 @@ module cli {
             let resolvedPath: PathResolution = this.resolveAndValidatePath(aPath)
 
             if (!resolvedPath.valid) {
-                this.exitWithError(CLI.SOURCE_PATH_NOT_FOUND);
+                ErrorHandler(CLI.JOURNEYS_PATH_NOT_FOUND);
             }
 
             return resolvedPath.path;
@@ -147,9 +156,13 @@ module cli {
             this.outputType = fs.statSync(this.sourcePath).isFile() ? OutputType.FILE : OutputType.FOLDER;
         }
 
-        private exitWithError(aError: string): void {
-            console.error(aError)
-            process.exit(1);
+        private parseJourneys(): Promise<Object> {
+            let journeyParsePromise: Promise<Object>,
+                journeyParser: JSONResolver = new JSONResolver({ property: 'journeys'});
+
+            //TODO
+
+            return journeyParsePromise;
         }
 
     }
