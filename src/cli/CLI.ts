@@ -4,7 +4,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as argumentParser from 'commander';
-import { IJourneys } from '../interfaces/IJourney'
+import ErrorHandler from '../core/ErrorHandler';
+import { IJourneys } from '../interfaces/IJourney';
 
 /*import FileConverter from './m2n/FileConverter';
 import {FormatTranslator, ExternalConversion} from './m2n/FormatTranslator';
@@ -28,6 +29,7 @@ module cli {
         public static DEFAULT_CONFIG_PATH: string = process.cwd() + '/jmnconfig.json';
 
         private static SOURCE_PATH_NOT_FOUND: string = "Source path not found";
+        private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
 
         constructor(cliArgs: string[]) {
@@ -52,7 +54,8 @@ module cli {
             configPath = (<any>argumentParser).config;
 
             if (!outputPath) { //undefined or empty string
-                this.assignSourceToBothPaths(sourcePath)
+                //this.assignSourceToBothPaths(sourcePath)
+                ErrorHandler(CLI.OUTPUT_PATH_NOT_SPECIFIED);
             } else {
                 this.assignPathValues(sourcePath, outputPath);
             }
