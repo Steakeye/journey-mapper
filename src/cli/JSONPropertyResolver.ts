@@ -14,15 +14,15 @@ module jm.cli {
 
     * */
 
-    export interface IJSONResolve {
+    export interface IJSONPropertyResolve {
         property: string;
         //type: { new(): any };
-
+        checkChildStrings?: boolean;
     }
 
-    export class JSONResolver {
+    export class JSONPropertyResolver {
 
-        constructor(...aPropertiesToResolve: IJSONResolve[]) {
+        constructor(...aPropertiesToResolve: IJSONPropertyResolve[]) {
 
         }
 

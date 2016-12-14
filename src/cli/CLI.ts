@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as argumentParser from 'commander';
 import ErrorHandler from './ErrorHandler';
-import { JSONResolver } from './JSONResolver';
+import { JSONPropertyResolver } from './JSONPropertyResolver';
 import { IJourneys } from '../interfaces/IJourney';
 
 /*import FileConverter from './m2n/FileConverter';
@@ -29,8 +29,8 @@ module cli {
     export class CLI {
         public static DEFAULT_CONFIG_PATH: string = process.cwd() + '/jmnconfig.json';
 
-        private static JOURNEYS_FILE_ERROR: string = "Please specify a location from which to load journeys json.";
-        private static JOURNEYS_PATH_NOT_FOUND: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
+        private static JOURNEYS_FILE_ERROR: string = "Please provide a location from which to load journeys json.";
+        private static JOURNEYS_PATH_NOT_SPECIFIED: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
         private static JOURNEYS_FILE_NOT_FOUND: string = "Journeys JSON not found. " + CLI.JOURNEYS_FILE_ERROR;
         private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified. Please specify a location to save mapped journeys.";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
@@ -63,14 +63,17 @@ module cli {
                 ErrorHandler(CLI.OUTPUT_PATH_NOT_SPECIFIED);
             } else if (!journeysPath) { //undefined or empty string
                 //this.assignSourceToBothPaths(journeysPath)
-                ErrorHandler(CLI.JOURNEYS_PATH_NOT_FOUND);
+                ErrorHandler(CLI.JOURNEYS_PATH_NOT_SPECIFIED);
             } else {
                 this.assignPathValues(journeysPath, outputPath);
             }
 
             this.setOutputType();
 
-            this.parseJourneys();
+            this.loadJourneysJSON().then(() => {
+                this.parseJourneysJSON();
+            });
+
         }
 
 /*        public convertFiles(): void {
@@ -146,7 +149,7 @@ module cli {
             let resolvedPath: PathResolution = this.resolveAndValidatePath(aPath)
 
             if (!resolvedPath.valid) {
-                ErrorHandler(CLI.JOURNEYS_PATH_NOT_FOUND);
+                ErrorHandler(CLI.JOURNEYS_FILE_NOT_FOUND);
             }
 
             return resolvedPath.path;
@@ -156,9 +159,32 @@ module cli {
             this.outputType = fs.statSync(this.sourcePath).isFile() ? OutputType.FILE : OutputType.FOLDER;
         }
 
-        private parseJourneys(): Promise<Object> {
+        private loadJourneysJSON(): Promise<Object> {
+            let journeyParsePromise: Promise<Object>;
+
+            //TODO
+            journeyParsePromise = new Promise((resolve : (value: Object) => void, reject: (error?: any) => void) => {
+                function handleJSON(aException: NodeJS.ErrnoException | null, aJSONData: string): void {
+                    if (aException) {
+                        reject(aException)
+                    } else {
+                        try {
+                            resolve(JSON.parse(aJSONData))
+                        } catch(aParseErr) {
+                            reject(aParseErr)
+                        }
+                    }
+                }
+
+                fs.readFile(this.sourcePath, "utf8", handleJSON);
+            });
+
+            return journeyParsePromise;
+        }
+
+        private parseJourneysJSON(): Promise<Object> {
             let journeyParsePromise: Promise<Object>,
-                journeyParser: JSONResolver = new JSONResolver({ property: 'journeys'});
+                journeyParser: JSONPropertyResolver = new JSONPropertyResolver({ property: 'journeys'});
 
             //TODO
 
