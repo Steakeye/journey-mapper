@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as argumentParser from 'commander';
 import ErrorHandler from './ErrorHandler';
+import JSONLoader from './JSONLoader';
 import { JSONPropertyResolver } from './JSONPropertyResolver';
 import { IJourneys } from '../interfaces/IJourney';
 
@@ -32,6 +33,7 @@ module cli {
         private static JOURNEYS_FILE_ERROR: string = "Please provide a location from which to load journeys json.";
         private static JOURNEYS_PATH_NOT_SPECIFIED: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
         private static JOURNEYS_FILE_NOT_FOUND: string = "Journeys JSON not found. " + CLI.JOURNEYS_FILE_ERROR;
+        private static JOURNEYS_LOAD_FAILED: string = "Journeys JSON failed to load. ";
         private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified. Please specify a location to save mapped journeys.";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
 
@@ -70,9 +72,7 @@ module cli {
 
             this.setOutputType();
 
-            this.loadJourneysJSON().then(() => {
-                this.parseJourneysJSON();
-            });
+            this.loadJourneysJSON();
 
         }
 
@@ -159,30 +159,18 @@ module cli {
             this.outputType = fs.statSync(this.sourcePath).isFile() ? OutputType.FILE : OutputType.FOLDER;
         }
 
-        private loadJourneysJSON(): Promise<Object> {
-            let journeyParsePromise: Promise<Object>;
+        private loadJourneysJSON(): void {
+            let journeyObjPromise: Promise<Object> = JSONLoader(this.sourcePath);
 
-            //TODO
-            journeyParsePromise = new Promise((resolve : (value: Object) => void, reject: (error?: any) => void) => {
-                function handleJSON(aException: NodeJS.ErrnoException | null, aJSONData: string): void {
-                    if (aException) {
-                        reject(aException)
-                    } else {
-                        try {
-                            resolve(JSON.parse(aJSONData))
-                        } catch(aParseErr) {
-                            reject(aParseErr)
-                        }
-                    }
-                }
-
-                fs.readFile(this.sourcePath, "utf8", handleJSON);
-            });
-
-            return journeyParsePromise;
+            journeyObjPromise.then((aJourneysObj: Object) => {
+                    this.parseJourneysJSON(aJourneysObj);
+                },
+                (aError: Error) => {
+                    ErrorHandler(CLI.JOURNEYS_LOAD_FAILED + aError);
+                });
         }
 
-        private parseJourneysJSON(): Promise<Object> {
+        private parseJourneysJSON(aJourneysObj: Object): Promise<Object> {
             let journeyParsePromise: Promise<Object>,
                 journeyParser: JSONPropertyResolver = new JSONPropertyResolver({ property: 'journeys'});
 

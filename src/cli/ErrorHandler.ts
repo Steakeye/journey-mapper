@@ -1,6 +1,6 @@
 
 module jm.cli {
-    export function ErrorHandler(aError: string): void {
+    export function ErrorHandler(aError: string | Error): void {
         console.error(aError)
         process.exit(1);
     }
