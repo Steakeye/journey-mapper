@@ -1,3 +1,5 @@
+//import * as JSONRefs from 'json-refs';
+var JSONRefs = require('json-refs');
 
 module jm.cli {
     /*TODO:
@@ -23,11 +25,27 @@ module jm.cli {
     export class JSONPropertyResolver {
 
         constructor(...aPropertiesToResolve: IJSONPropertyResolve[]) {
-
+            this.createResoltionFunctions(aPropertiesToResolve);
         }
 
-        private resolutionFunctions
+        public resolveProperties(aJSObject: Object): Promise<Object> {
+            let promiseResolver:(aThen:() => void, aFail:() => void) => void = (aThen:() => void, aFail:() => void) => {
+                    //TODO: Do stuff
+                },
+                resolutionPromise: Promise<Object> = new Promise(promiseResolver);
+            //TODO!
+            return resolutionPromise;
+        }
 
+        private resolutionFunctions: { [property: string]: (() => Promise<Object>) }
+
+        private createResoltionFunctions(aPropertiesToResolve: IJSONPropertyResolve[]) {
+            aPropertiesToResolve.map((aPropertyToResolve: IJSONPropertyResolve) => {
+                return (aObj: Object) => {
+
+                }
+            });
+        }
     }
 }
 

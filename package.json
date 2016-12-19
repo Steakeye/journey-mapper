@@ -42,7 +42,8 @@
   "dist": {},
   "dependencies": {
     "@types/es6-promise": "0.0.32",
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "json-refs": "^2.1.6"
   },
   "directories": {
     "doc": "docs"

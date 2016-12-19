@@ -5,7 +5,8 @@
         "rootDir": "src",
         "outDir": "bin",
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": false,
+        "allowJs": true
     },
     "include": [
         "typings/index.d.ts",

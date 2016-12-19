@@ -175,8 +175,7 @@ module cli {
                 journeyParser: JSONPropertyResolver = new JSONPropertyResolver({ property: 'journeys'});
 
             //TODO
-
-            return journeyParsePromise;
+            return journeyParser.resolveProperties(aJourneysObj);
         }
 
     }
