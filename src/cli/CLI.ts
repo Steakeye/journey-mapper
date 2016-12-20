@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as argumentParser from 'commander';
 import ErrorHandler from './ErrorHandler';
 import JSONLoader from './JSONLoader';
-import { JSONPropertyResolver } from './JSONPropertyResolver';
+import JSONPropertyResolver from './JSONPropertyResolver';
 import { IJourneys } from '../interfaces/IJourney';
 
 /*import FileConverter from './m2n/FileConverter';
@@ -33,7 +33,6 @@ module cli {
         private static JOURNEYS_FILE_ERROR: string = "Please provide a location from which to load journeys json.";
         private static JOURNEYS_PATH_NOT_SPECIFIED: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
         private static JOURNEYS_FILE_NOT_FOUND: string = "Journeys JSON not found. " + CLI.JOURNEYS_FILE_ERROR;
-        private static JOURNEYS_LOAD_FAILED: string = "Journeys JSON failed to load. ";
         private static OUTPUT_PATH_NOT_SPECIFIED: string = "Output path not specified. Please specify a location to save mapped journeys.";
         private static CONFIG_PATH_NOT_FOUND: string = "Config path not found";
 
@@ -72,7 +71,9 @@ module cli {
 
             this.setOutputType();
 
-            this.loadJourneysJSON();
+            this.loadJourneysJSON()
+                .then(this.setupJourneysJSONParser(this.sourcePath))
+                .then(this.buildJourneys);
 
         }
 
@@ -159,25 +160,28 @@ module cli {
             this.outputType = fs.statSync(this.sourcePath).isFile() ? OutputType.FILE : OutputType.FOLDER;
         }
 
-        private loadJourneysJSON(): void {
-            let journeyObjPromise: Promise<Object> = JSONLoader(this.sourcePath);
-
-            journeyObjPromise.then((aJourneysObj: Object) => {
-                    this.parseJourneysJSON(aJourneysObj);
-                },
-                (aError: Error) => {
-                    ErrorHandler(CLI.JOURNEYS_LOAD_FAILED + aError);
-                });
+        private loadJourneysJSON(): Promise<Object> {
+            return JSONLoader(this.sourcePath);
         }
 
-        private parseJourneysJSON(aJourneysObj: Object): Promise<Object> {
-            let journeyParsePromise: Promise<Object>,
-                journeyParser: JSONPropertyResolver = new JSONPropertyResolver({ property: 'journeys'});
-
-            //TODO
-            return journeyParser.resolveProperties(aJourneysObj);
+        private setupJourneysJSONParser(aJSONPath: string): (aJourneysObj: Object) => Promise<Object> {
+            return (aJourneysObj: Object) => {
+                return JSONPropertyResolver(aJourneysObj, path.parse(aJSONPath).dir);
+            }
         }
 
+        private buildJourneys(aJourneysObj: Object): Promise<Object> {
+            console.log('buildJourneys');
+            console.log(JSON.stringify(aJourneysObj, undefined, '\t'));
+
+            return Promise.resolve(aJourneysObj);
+        }
+
+        private setupErrorHandler(aMessage: string): (aError: Error) => void {
+            return (aError: Error) => {
+                ErrorHandler(aMessage + aError);
+            }
+        }
     }
 }
 

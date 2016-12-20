@@ -2,6 +2,6 @@
   "id": "test_hourneys_0",
   "name": "Simple Test Journeys",
   "journeys": [
-      "./journeys/test_journey_0.json"
+      { "$ref": "./journeys/test_journey_0.json" }
     ]
 }

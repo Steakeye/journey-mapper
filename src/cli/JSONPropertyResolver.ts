@@ -1,3 +1,7 @@
+///<reference path="../../typings/index.d.ts" />
+
+import ErrorHandler from './ErrorHandler';
+
 //import * as JSONRefs from 'json-refs';
 var JSONRefs = require('json-refs');
 
@@ -22,31 +26,15 @@ module jm.cli {
         checkChildStrings?: boolean;
     }
 
-    export class JSONPropertyResolver {
+    const JOURNEYS_RESOLUTION_FAILED: string = "JSON references failed to be resolved. ";
 
-        constructor(...aPropertiesToResolve: IJSONPropertyResolve[]) {
-            this.createResoltionFunctions(aPropertiesToResolve);
-        }
-
-        public resolveProperties(aJSObject: Object): Promise<Object> {
-            let promiseResolver:(aThen:() => void, aFail:() => void) => void = (aThen:() => void, aFail:() => void) => {
-                    //TODO: Do stuff
-                },
-                resolutionPromise: Promise<Object> = new Promise(promiseResolver);
-            //TODO!
-            return resolutionPromise;
-        }
-
-        private resolutionFunctions: { [property: string]: (() => Promise<Object>) }
-
-        private createResoltionFunctions(aPropertiesToResolve: IJSONPropertyResolve[]) {
-            aPropertiesToResolve.map((aPropertyToResolve: IJSONPropertyResolve) => {
-                return (aObj: Object) => {
-
-                }
-            });
-        }
+    export function JSONPropertyResolver(aJSObject: Object, aBasePath: string): Promise<Object> {
+        let config:JsonRefs.JsonRefsOptions = {
+                relativeBase: aBasePath
+            },
+            resolution: Promise<Object> = JSONRefs.resolveRefs(aJSObject, config);
+        return resolution.catch<Object>(ErrorHandler.setupPromiseErrorHandler(JOURNEYS_RESOLUTION_FAILED, aJSObject));
     }
 }
 
-export = jm.cli;
+export default jm.cli.JSONPropertyResolver;
