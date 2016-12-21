@@ -8,7 +8,7 @@ import ErrorHandler from './ErrorHandler';
 import JSONLoader from './JSONLoader';
 import JSONPropertyResolver from './JSONPropertyResolver';
 import { IJourneys } from '../interfaces/IJourney';
-import Journeys from '../core/Journeys';
+import { Journeys, JourneysConfig } from '../core/Journeys';
 
 /*import FileConverter from './m2n/FileConverter';
 import {FormatTranslator, ExternalConversion} from './m2n/FormatTranslator';
@@ -172,18 +172,20 @@ module cli {
             }
         }
 
-        private buildJourneys(aJourneysObj: Object): Promise<Object> {
+        private buildJourneys(aJourneysConf: Object): Promise<Journeys> {
             //console.log('buildJourneys');
-            let journeys = new Journeys();
+            let journeys = new Journeys(ErrorHandler);
 
-            return Promise.resolve(aJourneysObj);
+            journeys.build(<JourneysConfig>aJourneysConf);
+
+            //return Promise.resolve(aJourneysObj);
+            return Promise.resolve(journeys);
         }
 
-        private startJourneys(aJourneysObj: Object): Promise<Journeys> {
-            //console.log('buildJourneys');
-            let journeys: Journeys = new Journeys();
+        private startJourneys(aJourneysObj: Journeys): Promise<Journeys> {
+            aJourneysObj.begin();
 
-            return Promise.resolve(journeys);
+            return Promise.resolve(aJourneysObj);
         }
 
         private setupErrorHandler(aMessage: string): (aError: Error) => void {
