@@ -1,7 +1,7 @@
 import { IJourneys, IJourney } from '../interfaces/IJourney';
-import { Journey } from '../core/Journey'
+import { Journey, JourneyConfig } from '../core/Journey'
 
-class PluginApp implements IJourneys {
+class PluginApp {
     journeys: Journey[];
 
     constructor(fileList?: FileList, file?: File) {
@@ -24,7 +24,7 @@ class PluginApp implements IJourneys {
 
         for (;j < jLength; j++) {
             let config = configs[j];
-            this.journeys.push(new Journey(<IJourney>config));
+            this.journeys.push(new Journey(<JourneyConfig>config));
         }
     }
 }
