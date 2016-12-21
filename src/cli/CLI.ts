@@ -171,8 +171,7 @@ module cli {
         }
 
         private buildJourneys(aJourneysObj: Object): Promise<Object> {
-            console.log('buildJourneys');
-            console.log(JSON.stringify(aJourneysObj, undefined, '\t'));
+            //console.log('buildJourneys');
 
             return Promise.resolve(aJourneysObj);
         }
