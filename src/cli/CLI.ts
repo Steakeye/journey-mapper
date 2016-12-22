@@ -172,11 +172,11 @@ module cli {
             }
         }
 
-        private buildJourneys(aJourneysConf: Object): Promise<Journeys> {
+        private buildJourneys(aJourneysConf: JourneysConfig): Promise<Journeys> {
             //console.log('buildJourneys');
             let journeys = new Journeys(ErrorHandler);
 
-            journeys.build(<JourneysConfig>aJourneysConf);
+            journeys.build(aJourneysConf);
 
             //return Promise.resolve(aJourneysObj);
             return Promise.resolve(journeys);

@@ -18,6 +18,9 @@ module jm.core {
                 this.journeys = aJourneysConfig.journeys.map((aJourneyConf: JourneyConfig) => {
                     return new Journey(aJourneyConf)
                 });
+
+                //Link journeys
+                Journey.chain(this.journeys);
             }
 
             return Promise.resolve(this);

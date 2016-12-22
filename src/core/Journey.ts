@@ -1,5 +1,6 @@
 import { IJourney } from '../interfaces/IJourney';
 import { IPage } from '../interfaces/IPage';
+import { Link } from './Link'
 import { Page } from './Page'
 
 module jm.core {
@@ -13,8 +14,10 @@ module jm.core {
         modules: string[];
     }
 
-    export class Journey {
+    export class Journey extends Link {
         constructor(journey: JourneyConfig) {
+            super();
+
             for (let prop in journey) {
                 let journeyProperty = journey[prop];
 
@@ -30,6 +33,7 @@ module jm.core {
         }
 
         private pages: Page[];
+        private : Page[];
     }
 }
 
