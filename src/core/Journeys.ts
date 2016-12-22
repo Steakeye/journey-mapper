@@ -2,6 +2,8 @@ import { Journey, JourneyConfig } from './Journey';
 
 module jm.core {
     export interface JourneysConfig {
+        id: string;
+        title: string;
         journeys: JourneyConfig[]
     }
 
@@ -20,7 +22,10 @@ module jm.core {
                 });
 
                 //Link journeys
-                Journey.chain(this.journeys);
+                this.currentJourney = <Journey>Journey.chain(...this.journeys);
+
+                this.id = aJourneysConfig.id;
+                this.title = aJourneysConfig.title;
             }
 
             return Promise.resolve(this);
@@ -34,7 +39,10 @@ module jm.core {
             }
         }
 
+        private id: string;
+        private title: string;
         private journeys: Journey[];
+        private currentJourney: Journey;
 
         private setupJourneyTraversal(): (aOnComplete : (aJourneys: Journeys) => void, aOnFail: (aError: any) => void) => void {
 

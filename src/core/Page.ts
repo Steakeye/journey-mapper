@@ -1,16 +1,25 @@
-import { IPage } from '../interfaces/IPage'
 
-class Page implements IPage {
-    [index: string]: string;
-    key: string;
-    description: string;
-    url: string;
+module jm.core {
+    export interface PageConfig {
+        key: string;
+        description: string;
+        url: string;
+        answers?: string[];
+        headings?: string[];
+    }
 
-    constructor(page: IPage) {
-        for(let p in page) {
-            this[p] = page[p];
+    export class Page {
+        [index: string]: string;
+        key: string;
+        description: string;
+        url: string;
+
+        constructor(page: PageConfig) {
+            for (let p in page) {
+                this[p] = page[p];
+            }
         }
     }
 }
 
-export { Page }
+export = jm.core;

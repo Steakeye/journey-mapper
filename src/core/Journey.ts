@@ -1,29 +1,29 @@
 import { IJourney } from '../interfaces/IJourney';
-import { IPage } from '../interfaces/IPage';
 import { Link } from './Link'
-import { Page } from './Page'
+import { Page, PageConfig } from './Page'
 
 module jm.core {
     export interface JourneyConfig {
         [index: string]: any;
         id: string;
+        title: string;
         description: string;
         archive: string;
         thumbnails: string[];
-        pages: Page[];
+        pages: PageConfig[];
         modules: string[];
     }
 
     export class Journey extends Link {
-        constructor(journey: JourneyConfig) {
+        constructor(aJourney: JourneyConfig) {
             super();
 
-            for (let prop in journey) {
-                let journeyProperty = journey[prop];
+            for (let prop in aJourney) {
+                let journeyProperty = aJourney[prop];
 
                 if (prop === 'pages') {
-                    for (let page in journey.pages) {
-                        this.pages.push(new Page(<IPage>journey.pages[page]));
+                    for (let page in aJourney.pages) {
+                        this.pages.push(new Page(<PageConfig>aJourney.pages[page]));
                     }
 
                 } else {
@@ -34,6 +34,14 @@ module jm.core {
 
         private pages: Page[];
         private : Page[];
+
+        private assignMembers(): void {
+
+        }
+
+        private buildPages(): void {
+
+        }
     }
 }
 
