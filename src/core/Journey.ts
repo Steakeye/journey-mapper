@@ -6,10 +6,10 @@ import { Step, StepConfig } from './Step'
 
 module jm.core {
     export interface JourneyConfig {
-        [index: string]: any;
+        //[index: string]: any;
         id: string;
         title: string;
-        description: string;
+        description?: string;
         //archive: string;
         //thumbnails: string[];
         steps: StepConfig[];
@@ -19,7 +19,7 @@ module jm.core {
     export class Journey extends Link {
         private static STEPS_KEY: string = 'steps';
 
-        constructor(aJourney: JourneyConfig, aNavigtor: NavigatorAdaptor) {
+        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor) {
             super();
 
             for (let prop in aJourney) {
@@ -40,6 +40,9 @@ module jm.core {
 
         }
 
+        private id: string;
+        private title: string;
+        private description: string;
         private steps: Step[];
         private : Step[];
 

@@ -2,13 +2,14 @@
   "id": "googleToDoodle",
   "title": "Google To Doodle",
   "description": "This is just a simple journey to go from the Google home page to the Google Doodle page",
+  "startURL": "http://google.com"
   "steps": [{
     "id": "startPage",
     "title": "Google Home Page",
     "description": "We just need to confirm who you are. Start page.",
     "url": "http://localhost:9938/mdtp/registration?origin=ma&completionURL=/foo&failureURL=/fail&confidenceLevel=200",
     "pageMatcher": "",
-    "action": "./path/to/steps.js"
+    "actions": "./path/to/steps.js"
     },
     { "$ref": "../pages/doodle_page.json" }
   ]
