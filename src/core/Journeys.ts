@@ -1,3 +1,5 @@
+///<reference path="../interfaces/core.d.ts" />
+
 import { Journey, JourneyConfig } from './Journey';
 
 module jm.core {
@@ -11,14 +13,14 @@ module jm.core {
 
         private static MSG_ERROR_BEGIN_NO_JOURNEYS: string = "Cannot begin journeys without any journeys!";
 
-        constructor(private errorFunc: (aMessage: string | Error) => any) {
+        constructor(private errorFunc: (aMessage: string | Error) => any, private navigator: NavigatorAdaptor) {
         }
 
         public build(aJourneysConfig: JourneysConfig): Promise<Journeys> {
             //Making this idempotent
             if (!this.journeys) {
                 this.journeys = aJourneysConfig.journeys.map((aJourneyConf: JourneyConfig) => {
-                    return new Journey(aJourneyConf)
+                    return new Journey(aJourneyConf, this.navigator)
                 });
 
                 //Link journeys
@@ -45,6 +47,7 @@ module jm.core {
         private currentJourney: Journey;
 
         private setupJourneyTraversal(): (aOnComplete : (aJourneys: Journeys) => void, aOnFail: (aError: any) => void) => void {
+            this.currentJourney.begin();
 
             return (aOnComplete : (aJourneys: Journeys) => void, aOnFail: (aError: any) => void) => {
                 //TODO

@@ -1,6 +1,6 @@
 
 module jm.core {
-    export interface PageConfig {
+    export interface StepConfig {
         key: string;
         description: string;
         url: string;
@@ -8,13 +8,13 @@ module jm.core {
         headings?: string[];
     }
 
-    export class Page {
+    export class Step {
         [index: string]: string;
         key: string;
         description: string;
         url: string;
 
-        constructor(page: PageConfig) {
+        constructor(page: StepConfig) {
             for (let p in page) {
                 this[p] = page[p];
             }
