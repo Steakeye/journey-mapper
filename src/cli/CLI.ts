@@ -7,6 +7,7 @@ import * as argumentParser from 'commander';
 import ErrorHandler from './ErrorHandler';
 import JSONLoader from './JSONLoader';
 import JSONPropertyResolver from './JSONPropertyResolver';
+import NavAdaptor from './SeleniumNavAdaptor';
 import { IJourneys } from '../interfaces/IJourney';
 import { Journeys, JourneysConfig } from '../core/Journeys';
 
@@ -174,7 +175,7 @@ module cli {
 
         private buildJourneys(aJourneysConf: JourneysConfig): Promise<Journeys> {
             //console.log('buildJourneys');
-            let journeys = new Journeys(ErrorHandler);
+            let journeys = new Journeys(ErrorHandler, new NavAdaptor);
 
             journeys.build(aJourneysConf);
 

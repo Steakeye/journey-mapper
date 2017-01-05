@@ -1,6 +1,8 @@
+///<reference path="../interfaces/core.d.ts" />
+
 import { IJourney } from '../interfaces/IJourney';
 import { Link } from './Link'
-import { Page, PageConfig } from './Page'
+import { Step, StepConfig } from './Step'
 
 module jm.core {
     export interface JourneyConfig {
@@ -8,22 +10,24 @@ module jm.core {
         id: string;
         title: string;
         description: string;
-        archive: string;
-        thumbnails: string[];
-        pages: PageConfig[];
-        modules: string[];
+        //archive: string;
+        //thumbnails: string[];
+        steps: StepConfig[];
+        //modules: string[];
     }
 
     export class Journey extends Link {
-        constructor(aJourney: JourneyConfig) {
+        private static STEPS_KEY: string = 'steps';
+
+        constructor(aJourney: JourneyConfig, aNavigtor: NavigatorAdaptor) {
             super();
 
             for (let prop in aJourney) {
                 let journeyProperty = aJourney[prop];
 
-                if (prop === 'pages') {
-                    for (let page in aJourney.pages) {
-                        this.pages.push(new Page(<PageConfig>aJourney.pages[page]));
+                if (prop === Journey.STEPS_KEY) {
+                    for (let step in aJourney.steps) {
+                        this.steps.push(new Step(<StepConfig>aJourney.steps[step]));
                     }
 
                 } else {
@@ -32,14 +36,18 @@ module jm.core {
             }
         }
 
-        private pages: Page[];
-        private : Page[];
+        public begin(): void {
+
+        }
+
+        private steps: Step[];
+        private : Step[];
 
         private assignMembers(): void {
 
         }
 
-        private buildPages(): void {
+        private buildSteps(): void {
 
         }
     }
