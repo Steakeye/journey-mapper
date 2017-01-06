@@ -1,11 +1,12 @@
 ///<reference path="../interfaces/core.d.ts" />
-//import * as SQuery from 'selenium-query'
-const SQuery = require('selenium-query');
+///<reference path="../../custom/definitions/selenium-query.d.ts" />
+import * as SQuery from 'selenium-query';
+//const SQuery = require('selenium-query');
 
 module jm.cli {
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
         constructor() {
-            SQuery.
+            //SQuery.
         }
 
         public goTo(aUrl: string, aOnUrl: (aSuccess: boolean) => void): void {

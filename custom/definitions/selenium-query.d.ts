@@ -4,7 +4,7 @@
  * MIT license
  * http://opensource.org/licenses/MIT
  */
-declare var _: any;
+/*declare var _: any;
 declare var _webdriver: any;
 declare var dfr_run: any;
 declare function each(arr: any, fn: any, ctx: any): any;
@@ -35,7 +35,7 @@ declare var SQueryProto: {
     length: number;
     constructor: (mix: any) => any;
 };
-declare var SQuery: any;
+declare var SQuery: any;*/
 /*API
  ☰
  constructor
@@ -281,3 +281,44 @@ declare var SQuery: any;
  .load('http://google.com')
  .find('input')
  .css('background-color', 'red');*/
+    //import {WebDriver, WebElement} from 'selenium-webdriver';
+    //import * as sw from "selenium-webdriver";
+
+declare class SQuery {
+
+}
+
+
+
+
+/*declare module "selenium-query" {
+    var SQ:SQueryStatic
+    export = SQ;
+}*/
+declare module "selenium-query" {
+    //import * as sw from "selenium-webdriver";
+    import {WebDriver, WebElement, Builder} from "selenium-webdriver";
+
+    interface WebDriverOptions {
+        name?: string;
+        args?: string;
+        binaryPath?: string,
+
+        applyOptions(builder: Builder, options: WebDriverOptions): void;
+        setOptions(builder: Builder, options: WebDriverOptions): void;
+        setArguments(options: WebDriverOptions): void;
+        setBinaryPath(options: WebDriverOptions): void;
+        setLogging(options: WebDriverOptions): void;
+    }
+
+
+    interface SQueryStatic {
+        //new(): SQuery
+        (target: WebDriver | WebElement | WebElement[] | SQuery | SQuery[]): SQuery;
+        load(url:string, config?:WebDriverOptions):SQuery;
+    }
+
+
+    var SQ:SQueryStatic
+    export = SQ;
+}

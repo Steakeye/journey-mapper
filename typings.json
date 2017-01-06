@@ -3,5 +3,8 @@
     "commander": "registry:dt/commander#2.3.0+20160317120654",
     "json-refs": "github:AndrewKeatsHMRC/typed-json-refs",
     "node": "registry:env/node#6.0.0+20161105011511"
+  },
+  "dependencies": {
+    "selenium-webdriver": "registry:npm/selenium-webdriver#3.0.0-beta-2+20160908165836"
   }
 }
