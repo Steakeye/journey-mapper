@@ -304,11 +304,11 @@ declare module "selenium-query" {
         args?: string;
         binaryPath?: string,
 
-        applyOptions(builder: Builder, options: WebDriverOptions): void;
-        setOptions(builder: Builder, options: WebDriverOptions): void;
-        setArguments(options: WebDriverOptions): void;
-        setBinaryPath(options: WebDriverOptions): void;
-        setLogging(options: WebDriverOptions): void;
+        applyOptions?(builder: Builder, options: WebDriverOptions): void;
+        setOptions?(builder: Builder, options: WebDriverOptions): void;
+        setArguments?(options: WebDriverOptions): void;
+        setBinaryPath?(options: WebDriverOptions): void;
+        setLogging?(options: WebDriverOptions): void;
     }
 
 

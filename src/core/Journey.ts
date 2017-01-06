@@ -1,26 +1,30 @@
 ///<reference path="../interfaces/core.d.ts" />
 
 import { IJourney } from '../interfaces/IJourney';
-import { Link } from './Link'
+import { LinkItem } from './LinkItem'
 import { Step, StepConfig } from './Step'
+import { applyPropertiesFromSourceToTarget } from '../core_utils/Obj'
 
 module jm.core {
-    export interface JourneyConfig {
+    export interface JourneyConfig extends Item {
         //[index: string]: any;
         id: string;
         title: string;
         description?: string;
+        startURL: string;
         //archive: string;
         //thumbnails: string[];
         steps: StepConfig[];
         //modules: string[];
     }
 
-    export class Journey extends Link {
+    export class Journey extends LinkItem {
         private static STEPS_KEY: string = 'steps';
 
+        private static MEMBERS_KEYS: string[] = ['id', 'title', 'description', 'startURL', 'steps'];
+
         constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor) {
-            super();
+            super(aJourney);
 
             for (let prop in aJourney) {
                 let journeyProperty = aJourney[prop];
@@ -37,17 +41,17 @@ module jm.core {
         }
 
         public begin(): void {
-
+            this.nav.goTo(this.startURL)
         }
 
-        private id: string;
+        /*private id: string;
         private title: string;
-        private description: string;
+        private description: string;*/
+        private startURL: string;
         private steps: Step[];
-        private : Step[];
 
-        private assignMembers(): void {
-
+        private assignMembers(aJourney: JourneyConfig): void {
+            applyPropertiesFromSourceToTarget(Journey.MEMBERS_KEYS, aJourney, this);
         }
 
         private buildSteps(): void {

@@ -9,9 +9,13 @@ module jm.cli {
             //SQuery.
         }
 
-        public goTo(aUrl: string, aOnUrl: (aSuccess: boolean) => void): void {
+        public goTo(aUrl: string): Promise<SQuery> {
+            let sqLoad:SQuery = SQuery.load(aUrl);
 
+            return Promise.resolve(sqLoad)
         }
+
+        private seleniumWrapper = SQuery;
     }
 }
 
