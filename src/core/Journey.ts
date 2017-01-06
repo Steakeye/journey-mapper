@@ -27,19 +27,6 @@ module jm.core {
             super(aJourney);
 
             this.assignMembers(aJourney)
-
-            for (let prop in aJourney) {
-                let journeyProperty = aJourney[prop];
-
-                if (prop === Journey.STEPS_KEY) {
-                    for (let step in aJourney.steps) {
-                        this.steps.push(new Step(<StepConfig>aJourney.steps[step]));
-                    }
-
-                } else {
-                    this[prop] = journeyProperty;
-                }
-            }
         }
 
         public begin(): void {

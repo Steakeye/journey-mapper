@@ -8,14 +8,9 @@ module jm.core {
     }
 
     export class Step extends LinkItem {
-        constructor(page: StepConfig) {
-            super(page);
-
-            for (let p in page) {
-                this[p] = page[p];
-            }
+        constructor(aStep: StepConfig) {
+            super(aStep);
         }
     }
 }
-
 export = jm.core;
