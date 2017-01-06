@@ -4,13 +4,17 @@
 module jm.core_utils {
 
     export module Obj {
-        export function applyPropertiesFromSourceToTarget(aProperties: string[], aSource: {}, aTarget: {}): void {
+        export function applyPropertiesFromSourceToTarget(aProperties: string[], aSource: {}, aTarget: {}, aAugmenter?:(aKey: string, aValue: any, atarget: {}) => void): void {
             if (aProperties) {
                 aProperties.forEach((aKey: string) => {
                     let sourceProp: any;
 
                     if (aKey && ((sourceProp = aSource[aKey]) !== undefined)) {
-                        aTarget[aKey] = sourceProp;
+                        if (aAugmenter) {
+                            aAugmenter(aKey, sourceProp, aTarget);
+                        } else {
+                            aTarget[aKey] = sourceProp;
+                        }
                     }
                 })
             }

@@ -4,6 +4,10 @@ interface Item {
     description?: string;
 }
 
+interface ItemClass extends Item {
+    assignMembers(aProperties: Item): void;
+}
+
 /*interface NavGoToCallback {
     (aUrl: string, aOnUrl?: (aSuccess: boolean) => void): void;
 }

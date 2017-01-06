@@ -15,15 +15,30 @@ module jm.cli {
     const JOURNEYS_RESOLUTION_FAILED: string = "JSON references failed to be resolved. ";
 
     export function JSONPropertyResolver(aJSObject: Object, aBasePath: string): Promise<Object> {
-        let config:JsonRefs.JsonRefsOptions = {
+        let errorHandler = ErrorHandler.setupPromiseErrorHandler(JOURNEYS_RESOLUTION_FAILED, aJSObject),
+            config:JsonRefs.JsonRefsOptions = {
                 relativeBase: aBasePath
             },
             resolution: Promise<JsonRefs.ResolvedRefsResults> = JSONRefs.resolveRefs(aJSObject, config),
             resolveJson: (aJsonRef: JsonRefs.ResolvedRefsResults) => Promise<Object> = (aJsonRef: JsonRefs.ResolvedRefsResults) => {
-                return Promise.resolve(aJsonRef.resolved);
+                const jsonRefs:{ [JSONPointer: string]: JsonRefs.ResolvedRefDetails } = aJsonRef.refs;
+                let errors: string[] = Object.keys(jsonRefs).map((aValue) => {
+                    let error: string = jsonRefs[aValue].error;
+                    if (error) {
+                        return aValue + ' ' + error;
+                    }
+                }).filter((aErrorMessage: string) => {
+                    return  !!aErrorMessage;
+                });
+                if (errors.length) {
+                    return errorHandler(new Error(errors[0]));
+                } else {
+                    return Promise.resolve(aJsonRef.resolved);
+                }
+
             };
 
-        return resolution.then<Object>(resolveJson, ErrorHandler.setupPromiseErrorHandler(JOURNEYS_RESOLUTION_FAILED, aJSObject));
+        return resolution.then<Object>(resolveJson, errorHandler);
     }
 }
 

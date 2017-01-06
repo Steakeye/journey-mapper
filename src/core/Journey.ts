@@ -21,10 +21,12 @@ module jm.core {
     export class Journey extends LinkItem {
         private static STEPS_KEY: string = 'steps';
 
-        private static MEMBERS_KEYS: string[] = ['id', 'title', 'description', 'startURL', 'steps'];
+        private static MEMBERS_KEYS: string[] = ['startURL'];
 
         constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor) {
             super(aJourney);
+
+            this.assignMembers(aJourney)
 
             for (let prop in aJourney) {
                 let journeyProperty = aJourney[prop];
@@ -48,14 +50,18 @@ module jm.core {
         private title: string;
         private description: string;*/
         private startURL: string;
-        private steps: Step[];
+        private steps: Step[] = [];
 
         private assignMembers(aJourney: JourneyConfig): void {
             applyPropertiesFromSourceToTarget(Journey.MEMBERS_KEYS, aJourney, this);
+
+            this.buildSteps(aJourney.steps)
         }
 
-        private buildSteps(): void {
-
+        private buildSteps(aStepsConfigs: StepConfig[]): void {
+            aStepsConfigs.forEach((aStep: StepConfig) => {
+                this.steps.push(new Step(aStep));
+            });
         }
     }
 }
