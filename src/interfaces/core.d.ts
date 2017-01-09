@@ -8,6 +8,10 @@ interface ItemClass extends Item {
     assignMembers(aProperties: Item): void;
 }
 
+interface BasicErrorHandler {
+    (aError: string | Error): void
+}
+
 /*interface NavGoToCallback {
     (aUrl: string, aOnUrl?: (aSuccess: boolean) => void): void;
 }

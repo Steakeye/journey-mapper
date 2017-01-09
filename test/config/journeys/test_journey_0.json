@@ -6,9 +6,9 @@
   "steps": [{
     "id": "startPage",
     "title": "Google Home Page",
-    "description": "We just need to confirm who you are. Start page.",
+    "description": "Start page for Google.",
     "pageMatcher": "",
-    "actions": "./path/to/steps.js"
+    "actions": { "$ref": "../../actions/feeling_lucky.js" }
     },
     { "$ref": "../pages/doodle_page.json" }
   ]

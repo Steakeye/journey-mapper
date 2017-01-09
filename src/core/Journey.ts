@@ -23,14 +23,15 @@ module jm.core {
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
 
-        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor) {
+        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor, private errorFunc: BasicErrorHandler) {
             super(aJourney);
 
-            this.assignMembers(aJourney)
+            this.build(aJourney)
         }
 
         public begin(): void {
-            this.nav.goTo(this.startURL)
+            let queryObj = this.nav.goTo(this.startURL);
+            this.currentStep.begin(queryObj);
         }
 
         /*private id: string;
@@ -38,16 +39,23 @@ module jm.core {
         private description: string;*/
         private startURL: string;
         private steps: Step[] = [];
+        private currentStep: Step;
+
+        private build(aJourney: JourneyConfig): void {
+            this.assignMembers(aJourney);
+            this.buildSteps(aJourney.steps)
+
+            //Link steps
+            this.currentStep = <Step>Step.chain(...this.steps);
+        }
 
         private assignMembers(aJourney: JourneyConfig): void {
             applyPropertiesFromSourceToTarget(Journey.MEMBERS_KEYS, aJourney, this);
-
-            this.buildSteps(aJourney.steps)
         }
 
         private buildSteps(aStepsConfigs: StepConfig[]): void {
             aStepsConfigs.forEach((aStep: StepConfig) => {
-                this.steps.push(new Step(aStep));
+                this.steps.push(new Step(aStep, this.nav, this.errorFunc));
             });
         }
     }

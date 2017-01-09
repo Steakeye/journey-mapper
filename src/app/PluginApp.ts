@@ -24,7 +24,7 @@ class PluginApp {
 
         for (;j < jLength; j++) {
             let config = configs[j];
-            this.journeys.push(new Journey(<JourneyConfig>config, undefined));
+            this.journeys.push(new Journey(<JourneyConfig>config, undefined, undefined));
         }
     }
 }
