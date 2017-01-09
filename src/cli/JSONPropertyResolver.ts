@@ -63,35 +63,38 @@ module jm.cli {
                 //obj._$ref = path.resolve(this.relativeBase, obj.$ref);
                 //obj.$ref = undefined;
                 objToReturn = { _$ref: path.resolve(this.relativeBase, obj.$ref) };
+                //objToReturn = obj;
             } else {
                 objToReturn = obj;
             }
 
             return objToReturn;
         }
-        /*function postProcessor(obj: JsonRefs.UnresolvedRefDetails, refPath: string[]) {
+        function postProcessor(obj: JsonRefs.UnresolvedRefDetails, refPath: string[]) {
             var objToReturn;
             console.log('postProcessor');
 
-            if (typeof obj.def == 'function') {
+            if ((<any>obj.def)._$ref) {
                 console.log('we found a cheeky non json function');
-                objToReturn = obj.def;
+                obj.uri = undefined;
+                //objToReturn = obj.def;
+                objToReturn = obj;
             }
             else {
                 objToReturn = obj;
             }
             return objToReturn;
         }
-*/
+
         let moduleTable = {},
             errorHandler = ErrorHandler.setupPromiseErrorHandler(JSON_RESOLUTION_FAILED, aJSObject),
             config:JsonRefs.JsonRefsOptions = {
                 relativeBase: aBasePath,
                 includeInvalid: true,
                 //filter: refFilter
-                filter: excludeSpecialPaths,
-                refPreProcessor: processor//,
-                //refPostProcessor: postProcessor
+                //filter: excludeSpecialPaths,
+                refPreProcessor: processor,//,
+                refPostProcessor: postProcessor
             },
             resolution: Promise<JsonRefs.ResolvedRefsResults> = JSONRefs.resolveRefs(aJSObject, config),
             resolveJson: (aJsonRef: JsonRefs.ResolvedRefsResults) => Promise<Object> = (aJsonRef: JsonRefs.ResolvedRefsResults) => {
