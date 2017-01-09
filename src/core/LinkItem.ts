@@ -9,7 +9,7 @@ module jm.core {
         constructor(aItemInfo: Item) {
             super();
 
-            if(!aItemInfo) {
+            if (!aItemInfo) {
                 throw new Error(LinkItem.NO_CONSTRUCTOR_CONFIG);
             } else {
                 this.idVal = aItemInfo.id;

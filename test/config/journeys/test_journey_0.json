@@ -7,7 +7,7 @@
     "id": "startPage",
     "title": "Google Home Page",
     "description": "Start page for Google.",
-    "pageMatcher": "",
+    "validator": "",
     "actions": { "$ref": "../../actions/feeling_lucky.js" }
     },
     { "$ref": "../pages/doodle_page.json" }
