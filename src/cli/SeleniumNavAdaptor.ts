@@ -12,7 +12,8 @@ module jm.cli {
         public goTo(aUrl: string): Promise<SQuery> {
             let sqLoad:SQuery = SQuery.load(aUrl);
 
-            return Promise.resolve(sqLoad)
+            //return Promise.resolve(sqLoad)
+            return sqLoad;
         }
 
         private seleniumWrapper = SQuery;

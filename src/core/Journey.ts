@@ -19,7 +19,7 @@ module jm.core {
     }
 
     export class Journey extends LinkItem {
-        private static STEPS_KEY: string = 'steps';
+        private static MSG_FAILED_TO_LOAD: string = "Failed to load:";
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
 
@@ -30,8 +30,14 @@ module jm.core {
         }
 
         public begin(): void {
-            let queryObj = this.nav.goTo(this.startURL);
-            this.currentStep.begin(queryObj);
+            let queryAsyn: Promise<SQuery| JQuery> = this.nav.goTo(this.startURL);
+
+            queryAsyn.then((aQuery:SQuery| JQuery) => {
+                this.currentStep.begin(aQuery);
+            }, (aErr: any) => {
+                this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
+            });
+
         }
 
         /*private id: string;

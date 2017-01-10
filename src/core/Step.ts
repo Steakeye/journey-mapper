@@ -16,9 +16,9 @@ module jm.core {
             this.build(aStep);
         }
 
-        public begin(aCurrentState: Promise<SQuery| JQuery>) : void {
+        public begin(aCurrentState: SQuery| JQuery) : void {
             //TODO
-            if (this.isExpectedState(undefined)) {
+            if (this.isExpectedState(aCurrentState)) {
                 this.interact(aCurrentState)
             } else {
                 this.errorHandler(Step.MSG_INCORRECT_STATE);

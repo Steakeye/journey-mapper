@@ -284,7 +284,7 @@ declare var SQuery: any;*/
     //import {WebDriver, WebElement} from 'selenium-webdriver';
     //import * as sw from "selenium-webdriver";
 
-declare class SQuery {
+declare class SQuery extends Promise<SQuery> {
 
 }
 
