@@ -16,9 +16,9 @@ module jm.core {
                     Link.break(aLinks[0]);
                 }
 
-                return aLinks.reduce((aPrev: Link, aNext: Link) => {
-                    aPrev.next = aNext;
-                    return aNext;
+                return aLinks.reduceRight((aLast: Link, aPrev: Link) => {
+                    aLast.prev = aPrev;
+                    return aPrev;
                 })
             }
         }
@@ -34,8 +34,22 @@ module jm.core {
             return this.nextLink;
         }
 
-        public set prev(aNextLink: Link) {
-            this.nextLink = aNextLink;
+        public set prev(aPrevLink: Link) {
+            if (aPrevLink === this.prevLink) {
+                return;
+            }
+
+            if (this.linkToSetNotSelf(aPrevLink)) {
+                let earlierLink = this.nextLink;
+                if (earlierLink) {
+                    earlierLink.next = null;
+                }
+                this.prevLink = aPrevLink;
+            }
+
+            if (aPrevLink !== null) {
+                aPrevLink.next = this;
+            }
         }
 
         public get next() : Link {
@@ -43,7 +57,29 @@ module jm.core {
         }
 
         public set next(aNextLink: Link) {
-            this.nextLink = aNextLink;
+            if (aNextLink === this.nextLink) {
+                return;
+            }
+
+            if (this.linkToSetNotSelf(aNextLink)) {
+                let earlierLink = this.prevLink;
+                if (earlierLink) {
+                    earlierLink.prev = null;
+                }
+                this.nextLink = aNextLink;
+            }
+
+            if (aNextLink !== null) {
+                aNextLink.prev = this;
+            }
+        }
+
+        private linkToSetNotSelf(aLinkToAttach: Link): boolean {
+            if (aLinkToAttach === this) {
+                throw new Error("Link cannot be linked to itself");
+            } else {
+                return true;
+            }
         }
 
         private nextLink: Link = null;

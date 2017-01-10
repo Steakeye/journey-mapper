@@ -7,9 +7,14 @@
     "id": "startPage",
     "title": "Google Home Page",
     "description": "Start page for Google.",
-    "validator": "",
+    "validator": { "$ref": "../../validators/is_google_home.js" },
     "actions": { "$ref": "../../actions/feeling_lucky.js" }
     },
-    { "$ref": "../pages/doodle_page.json" }
+    { "$ref": "../pages/doodle_page.json" },
+    {
+      "id": "thirdPage",
+      "title": "Pointless Page",
+      "description": "3rd page for Google."
+    }
   ]
 }

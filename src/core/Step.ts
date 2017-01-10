@@ -32,26 +32,23 @@ module jm.core {
                 this.interactor = require(path);
             }
 
+            //Assign validator
             path = aStep.validator;
-
-            if (path) {
-                this.validator = require(path);
-            }
-
+            this.validator = path ? require(path) : (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => true;
         }
 
         private isExpectedState(aCurrentState: SQuery| JQuery) : boolean {
             //TODO
-            return true;
+            return this.validator(this, aCurrentState, this.nav);
         }
 
         private interact(aState: SQuery| JQuery) : void {
             //TODO
-            this.interactor(aState, this.nav);
+            this.interactor(this, aState, this.nav);
         }
 
-        private interactor: (aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => void;
-        private validator?: (aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => boolean;
+        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => void;
+        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => boolean;
     }
 }
 export = jm.core;
