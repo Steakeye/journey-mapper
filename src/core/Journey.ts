@@ -43,7 +43,7 @@ module jm.core {
 
         private build(aJourney: JourneyConfig): void {
             this.assignMembers(aJourney);
-            this.buildSteps(aJourney.steps)
+            this.buildSteps(aJourney.steps);
 
             //Link steps
             this.currentStep = <Step>Step.chain(...this.steps);
