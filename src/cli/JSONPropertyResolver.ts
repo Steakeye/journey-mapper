@@ -16,6 +16,7 @@ module jm.cli {
     type ObjOrArr = {} | any[];
 
     const JSON_RESOLUTION_FAILED: string = "JSON references failed to be resolved.";
+    const PATH_EMPTY_JSON: string = process.cwd() + '/resources/empty.json';
     const SPECIAL_CASE_KEYS: string[] = ['actions', 'validator'];
 
     function reMapModulePaths(aModuleMap:{ [pointer:string]: string}, aJSObject: Object): Object {
@@ -34,7 +35,7 @@ module jm.cli {
                 ++pathIndex;
             }
 
-        })
+        });
 
         return aJSObject;
     }
@@ -62,7 +63,7 @@ module jm.cli {
                 //obj.$ref = path.resolve(this.relativeBase, obj.$ref);
                 //obj._$ref = path.resolve(this.relativeBase, obj.$ref);
                 //obj.$ref = undefined;
-                objToReturn = { _$ref: path.resolve(this.relativeBase, obj.$ref) };
+                objToReturn = { _$ref: path.resolve(this.relativeBase, obj.$ref), $ref: path.relative(this.relativeBase, PATH_EMPTY_JSON) };
                 //objToReturn = obj;
             } else {
                 objToReturn = obj;
@@ -76,7 +77,7 @@ module jm.cli {
 
             if ((<any>obj.def)._$ref) {
                 console.log('we found a cheeky non json function');
-                obj.uri = undefined;
+                //obj.uri = undefined;
                 //objToReturn = obj.def;
                 objToReturn = obj;
             }
