@@ -285,11 +285,9 @@ declare var SQuery: any;*/
     //import * as sw from "selenium-webdriver";
 
 declare class SQuery extends Promise<SQuery> {
-
 }
 
-
-
+interface SQStatic {}
 
 /*declare module "selenium-query" {
     var SQ:SQueryStatic
@@ -319,6 +317,6 @@ declare module "selenium-query" {
     }
 
 
-    var SQ:SQueryStatic
+    var SQ:SQueryStatic;
     export = SQ;
 }

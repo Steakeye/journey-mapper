@@ -39,16 +39,16 @@ module jm.core {
 
         private isExpectedState(aCurrentState: SQuery| JQuery) : boolean {
             //TODO
-            return this.validator(this, aCurrentState, this.nav);
+            return this.validator(this, aCurrentState, this.errorHandler);
         }
 
         private interact(aState: SQuery| JQuery) : void {
             //TODO
-            this.interactor(this, aState, this.nav);
+            this.interactor(this, aState, this.errorHandler);
         }
 
-        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => void;
-        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => boolean;
+        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => void;
+        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean;
     }
 }
 export = jm.core;

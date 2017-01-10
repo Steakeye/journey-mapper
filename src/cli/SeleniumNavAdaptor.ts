@@ -16,7 +16,16 @@ module jm.cli {
             return sqLoad;
         }
 
-        private seleniumWrapper = SQuery;
+        public get queryStatic():SQStatic {
+            return this.seleniumWrapper;
+        }
+
+        public getCurrentUrl(): string {
+            //this.nav.queryStatic.getDriver().WebDriver->getCurrentUrl()
+            return "//this.nav.queryStatic.getDriver().WebDriver->getCurrentUrl()";
+        }
+
+        private seleniumWrapper:SQStatic = SQuery;
     }
 }
 
