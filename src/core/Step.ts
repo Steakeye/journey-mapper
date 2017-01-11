@@ -18,11 +18,17 @@ module jm.core {
 
         public begin(aCurrentState: SQuery| JQuery) : void {
             //TODO
-            if (this.isExpectedState(aCurrentState)) {
+            /*if (this.isExpectedState(aCurrentState)) {
                 this.interact(aCurrentState)
             } else {
                 this.errorHandler(Step.MSG_INCORRECT_STATE);
-            }
+            }*/
+            this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
+                this.interact(aCurrentState);
+            },
+            (aErr: string) => {
+                this.errorHandler(aErr);
+            });
         }
 
         private build(aStep: StepConfig): void {
@@ -37,9 +43,20 @@ module jm.core {
             this.validator = path ? require(path) : (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => true;
         }
 
-        private isExpectedState(aCurrentState: SQuery| JQuery) : boolean {
-            //TODO
-            return this.validator(this, aCurrentState, this.errorHandler);
+        private isExpectedState(aCurrentState: SQuery| JQuery) : Promise<boolean> {
+            return new Promise<boolean>((resolve : (value?: boolean) => void, reject: (error?: any) => void) => {
+                let res = this.validator(this, aCurrentState, this.errorHandler);
+
+                if (res !== undefined && !(res instanceof Promise)) {
+                    if (res) {
+                        resolve(res);
+                    } else {
+                        reject(Step.MSG_INCORRECT_STATE);
+                    }
+                } else {
+                    (<Promise<boolean>>res).then(resolve, reject);
+                }
+            });
         }
 
         private interact(aState: SQuery| JQuery) : void {
@@ -48,7 +65,7 @@ module jm.core {
         }
 
         private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => void;
-        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean;
+        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
     }
 }
 export = jm.core;

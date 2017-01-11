@@ -2,7 +2,7 @@
   "id": "googleToDoodle",
   "title": "Google To Doodle",
   "description": "This is just a simple journey to go from the Google home page to the Google Doodle page",
-  "startURL": "http://google.com",
+  "startURL": "https://www.google.co.uk",
   "steps": [{
     "id": "startPage",
     "title": "Google Home Page",
