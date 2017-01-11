@@ -285,6 +285,10 @@ declare var SQuery: any;*/
     //import * as sw from "selenium-webdriver";
 
 declare class SQuery extends Promise<SQuery> {
+    add(mix:any): SQuery;
+    resolve<T>(value?: T | Thenable<T>): SQuery;
+    reject(error: any): SQuery;
+    //reject<T>(error: T): SQuery;
 }
 
 interface SQStatic {}
@@ -311,9 +315,11 @@ declare module "selenium-query" {
 
 
     interface SQueryStatic {
-        //new(): SQuery
         (target: WebDriver | WebElement | WebElement[] | SQuery | SQuery[]): SQuery;
-        load(url:string, config?:WebDriverOptions):SQuery;
+        load(url:string, config?:WebDriverOptions): SQuery;
+        build(config?:WebDriverOptions): WebDriver;
+        setDriver(driver: any): void;
+        getDriver(): any;
     }
 
 
