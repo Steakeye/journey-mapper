@@ -1,5 +1,5 @@
 function isGoogleHome(aStep, aQueryObj, aErrorFunc) {
-    var urlToMatch = "http://google.com"; //https://www.google.co.uk/
+    var urlToMatch = "https://www.google.co.uk/"; //https://www.google.co.uk/
 
     console.log('We got to google home validator!');
 

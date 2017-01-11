@@ -13,7 +13,7 @@ module jm.cli {
         }
         export function setupPromiseErrorHandler<T>(aMessage: string, aValue:T): (aError: Error) => Promise<T> {
             return (aError: Error): Promise<T> => {
-                ErrorHandler(aMessage + aError);
+                ErrorHandler(`${aMessage} ${aError}`);
                 return Promise.reject(aValue);
             }
         }

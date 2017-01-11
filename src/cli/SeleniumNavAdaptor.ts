@@ -9,8 +9,8 @@ module jm.cli {
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
         constructor() {
             //SQuery.
-            this.webDriver = SQuery.build();
-            this.query = SQuery(this.webDriver);
+            /*this.webDriver = SQuery.build();
+            this.query = SQuery(this.webDriver);*/
             //this.queryInstance = new SQuery(this.webDriver);
         }
 
@@ -50,10 +50,13 @@ module jm.cli {
             //return "//this.nav.queryStatic.getDriver().WebDriver->getCurrentUrl()";
         }
 
+        public takeScreenshot(): Promise<string> {
+            return this.webDriver.takeScreenshot()
+        }
+
         private seleniumWrapper:SQStatic = SQuery;
-        private query:SQuery = null;
-        private queryInstance:SQuery = null;
-        private webDriver:WebDriver = null;
+        private webDriver:WebDriver = SQuery.build();
+        private query:SQuery = SQuery(this.webDriver);
     }
 }
 
