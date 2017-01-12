@@ -8,21 +8,14 @@ import { WebDriver } from 'selenium-webdriver';
 module jm.cli {
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
         constructor() {
-            //SQuery.
-            /*this.webDriver = SQuery.build();
-            this.query = SQuery(this.webDriver);*/
-            //this.queryInstance = new SQuery(this.webDriver);
         }
 
         public goTo(aUrl: string): Promise<SQuery> {
-            let query: SQuery = this.query,
+            let query: SQuery = this.queryInstance,
                 driver: WebDriver = this.webDriver;
-            //let sqLoad:SQuery = SQuery.load(aUrl);
 
-            //return Promise.resolve(sqLoad)
-            this.webDriver.get(aUrl).then(function () {
-                query.add(driver);
-                query.resolve(query);
+            driver.get(aUrl).then(function () {
+                //query.resolve(query);
             }, function (error) {
                 if (error.code !== 100) {
                     query.reject(error);
@@ -30,8 +23,7 @@ module jm.cli {
                 }
                 //driver = SQuery.build(config);
                 driver.get(aUrl).then(function () {
-                    query.add(driver);
-                    query.resolve(query);
+                    //query.resolve(query);
                 }, function (error) {
                     return query.reject(error);
                 });
@@ -40,14 +32,16 @@ module jm.cli {
             return query;
         }
 
+        public get query():SQuery {
+            return this.queryInstance;
+        }
+
         public get queryStatic():SQStatic {
             return this.seleniumWrapper;
         }
 
         public getCurrentUrl(): Promise<string> {
-            //this.nav.queryStatic.getDriver().WebDriver->getCurrentUrl()
             return this.webDriver.getCurrentUrl();
-            //return "//this.nav.queryStatic.getDriver().WebDriver->getCurrentUrl()";
         }
 
         public takeScreenshot(): Promise<string> {
@@ -56,8 +50,9 @@ module jm.cli {
 
         private seleniumWrapper:SQStatic = SQuery;
         private webDriver:WebDriver = SQuery.build();
-        private query:SQuery = SQuery(this.webDriver);
+        private queryInstance:SQuery = SQuery(this.webDriver);
     }
 }
+
 
 export default jm.cli.SeleniumNavAdaptor;

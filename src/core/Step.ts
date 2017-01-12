@@ -1,8 +1,6 @@
 import { LinkItem } from './LinkItem'
-import {unescape} from "querystring";
 
 module jm.core {
-    type DeferredQuery = SQuery| JQuery;
 
     type ScreenshotCue_onLoad = "on_load";
     type ScreenshotCue_onInteract = "on_interaction";
@@ -48,14 +46,15 @@ module jm.core {
             this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
                 this.setValidation(true, true);
 
-                this.interact(aCurrentState).then((aCurrentState: DeferredQuery) => {
+                //this.interact(aCurrentState).then((aCurrentState: DeferredQuery) => {
+                this.interact(this.nav.query).then((aCurrentState: DeferredQuery) => {
                     //TODO
                     console.log('interact.then()');
-                    this.handleCompletedInteraction()
+                    this.handleCompletedInteraction();
                 },
                 (aErr: any) => {
                     //TODO
-                    console.log('interact.refect()');
+                    console.log('interact.reject(): ' + aErr);
                     this.handleFailedInteraction();
                 });
             },
@@ -103,7 +102,7 @@ module jm.core {
             //TODO
         }
 
-        private interact(aState: SQuery| JQuery) : Promise<DeferredQuery> {
+        private interact(aState: DeferredQuery) : Promise<DeferredQuery> {
             return this.interactor(this, aState, this.errorHandler);
         }
 

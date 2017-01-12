@@ -16,8 +16,11 @@ interface BasicErrorHandler {
     (aError: string | Error): void
 }
 
+type DeferredQuery = SQuery| JQuery;
+
 interface NavigatorAdaptor {
-    goTo(aUrl: string): Promise<SQuery| JQuery>;
+    query: DeferredQuery
+    goTo(aUrl: string): Promise<DeferredQuery>;
     getCurrentUrl(): Promise<string>;
     takeScreenshot(): Promise<string>;
 }

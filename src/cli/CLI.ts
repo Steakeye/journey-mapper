@@ -11,10 +11,6 @@ import NavAdaptor from './SeleniumNavAdaptor';
 import { IJourneys } from '../interfaces/IJourney';
 import { Journeys, JourneysConfig } from '../core/Journeys';
 
-/*import FileConverter from './m2n/FileConverter';
-import {FormatTranslator, ExternalConversion} from './m2n/FormatTranslator';
-import {PathMapper, MappingPair} from './m2n/PathMapper';*/
-
 enum OutputType {
     FILE,
     FOLDER
@@ -113,8 +109,6 @@ module cli {
 
         private tryToLoadConfig(aConfigPath: string): void {
             let resolvedPath: PathResolution = this.resolveAndValidatePath(aConfigPath);
-            /*,
-             configJson:Config;*/
 
             if (resolvedPath.valid) {
                 try {
