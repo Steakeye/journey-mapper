@@ -16,14 +16,23 @@ module jm.core {
         on_interact?: string;
     }
 
-    export interface StepConfig extends Item {
+    export interface StepConfig extends ItemConfig {
         screenShots?: ScreenshotCue[];
         actions?:string;
         validator?:string;
     }
 
-    export class Step extends LinkItem {
+    export interface StepResolveCB {
+        (aValue?: Step): void;
+    }
+    export interface StepRejectCB {
+        (aError?: any): void;
+    }
+
+    export class Step extends LinkItem implements Task {
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
+        private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
+        private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
         private static SCREENSHOT_CUES: ScreenshotCueDictionary  = {
             onLoad: "on_load",
             onInteract: "on_interaction"
@@ -35,25 +44,37 @@ module jm.core {
             this.build(aStep);
         }
 
-        public begin(aCurrentState: SQuery| JQuery) : void {
-            this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
+        public get complete(): boolean {
+            return this.isComplete;
+        }
 
-            this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
-                let interaction: Promise<DeferredQuery>;
+        public get succeeded(): boolean {
+            return this.hasSuceeded;
+        }
 
-                this.setValidation(true, true);
+        public begin(aCurrentState: SQuery| JQuery) : Promise<Step> {
+            return new Promise<Step>((aOnResolve : StepResolveCB, aOnReject: StepRejectCB) => {
+                this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
 
-                if (this.canInteract()) {
-                    this.interact();
-                } else {
-                    this.stepToNext();
-                }
+                this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
+                        let interaction: Promise<DeferredQuery>;
 
-            },
-            (aErr: string) => {
-                this.setValidation(true, false);
-                this.errorHandler(Step.MSG_INCORRECT_STATE);
-            });
+                        this.setValidation(true, true);
+
+                        if (this.canInteract()) {
+                            this.interact(aOnResolve, aOnReject);
+                        } else {
+                            //this.stepToNext();
+                            aOnResolve(this);
+                        }
+
+                    },
+                    (aErr: string) => {
+                        this.setValidation(true, false);
+                        this.errorHandler(Step.MSG_INCORRECT_STATE);
+                        aOnReject(Step.MSG_INCORRECT_STATE)
+                    });
+            })
         }
 
         private build(aStep: StepConfig): void {
@@ -87,33 +108,25 @@ module jm.core {
             });
         }
 
-        private handleCompletedInteraction(): void {
-            //TODO!
-        }
-        private handleFailedInteraction(): void {
-            //TODO
-        }
-
         private canInteract(): boolean {
             return !!this.interactor;
         }
 
-        private interact() : void {
+        private interact(aOnResolve : StepResolveCB, aOnReject: StepRejectCB) : void {
             this.interactor(this, this.nav.query, this.errorHandler).then((aInteractionSuccess: boolean) => {
                 console.log('interact.then(): ' + aInteractionSuccess);
-                    this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
+                this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
 
-
-                    if (aInteractionSuccess) {
-                    this.handleCompletedInteraction();
+                if (aInteractionSuccess) {
+                    aOnResolve(this);
                 } else {
-                    this.handleFailedInteraction();
+                    aOnReject(Step.MSG_INTERACTION_UNSUCCESSFUL);
                 }
             },
             (aErr: any) => {
                 console.log('interact.reject(): ' + aErr);
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
-                this.handleFailedInteraction();
+                aOnReject(Step.MSG_INTERACTION_FAILED)
             });
         }
 
@@ -135,6 +148,11 @@ module jm.core {
             this.isValid = aPassed;
         }
 
+        private setCompletion(aSuccess: boolean): void {
+            this.isComplete = true;
+            this.hasSuceeded = aSuccess;
+        }
+
         private stepToNext(): void {
             //TODO!
         }
@@ -146,6 +164,10 @@ module jm.core {
         private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
 
         private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
+
+        private isComplete : boolean = false;
+
+        private hasSuceeded: boolean = false;
 
         private hasBeenValidated: boolean = false;
 

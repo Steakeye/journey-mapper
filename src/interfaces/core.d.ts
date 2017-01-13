@@ -2,14 +2,19 @@ interface ModernArray<T> extends Array<T> {
     includes(aVal:T): boolean;
 }
 
-interface Item {
+interface ItemConfig {
     id: string;
     title: string;
     description?: string;
 }
 
-interface ItemClass extends Item {
-    assignMembers(aProperties: Item): void;
+interface Item extends ItemConfig {
+    assignMembers(aProperties: ItemConfig): void;
+}
+
+interface Task {
+    complete: boolean;
+    succeeded: boolean;
 }
 
 interface BasicErrorHandler {

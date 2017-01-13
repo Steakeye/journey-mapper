@@ -2,11 +2,11 @@
 
 import { IJourney } from '../interfaces/IJourney';
 import { LinkItem } from './LinkItem'
-import { Step, StepConfig } from './Step'
+import { Step, StepConfig, StepResolveCB, StepRejectCB } from './Step'
 import { applyPropertiesFromSourceToTarget } from '../core_utils/Obj'
 
 module jm.core {
-    export interface JourneyConfig extends Item {
+    export interface JourneyConfig extends ItemConfig {
         //[index: string]: any;
         id: string;
         title: string;
@@ -30,19 +30,18 @@ module jm.core {
         }
 
         public begin(): void {
-            let queryAsyn: Promise<SQuery| JQuery> = this.nav.goTo(this.startURL);
+            let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
+                stepResolve: StepResolveCB = this.makeStepResolveHandler(),
+                stepReject: StepRejectCB = this.makeStepResolveHandler();
 
-            queryAsyn.then((aQuery:SQuery| JQuery) => {
-                this.currentStep.begin(aQuery);
+            queryAsync.then((aQuery:DeferredQuery) => {
+                this.currentStep.begin(aQuery).then(stepResolve, stepReject);
             }, (aErr: any) => {
                 this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
             });
 
         }
 
-        /*private id: string;
-        private title: string;
-        private description: string;*/
         private startURL: string;
         private steps: Step[] = [];
         private currentStep: Step;
@@ -63,6 +62,23 @@ module jm.core {
             aStepsConfigs.forEach((aStep: StepConfig) => {
                 this.steps.push(new Step(aStep, this.nav, this.errorFunc));
             });
+        }
+
+        private makeStepResolveHandler(): StepResolveCB {
+            return (aValue: Step) => {
+                this.currentStep = <Step>aValue.next;
+
+                if (this.currentStep === null) {
+                    //TODO
+                    //We've completed all the step
+                    //Need to mark as complete
+                }
+            }
+        }
+        private makeStepRejectHandler(): StepRejectCB {
+            return (aError: any) => {
+                //TODO!
+            }
         }
     }
 }

@@ -3,10 +3,10 @@
 import { Link } from './Link'
 
 module jm.core {
-    export abstract class LinkItem extends Link implements Item {
+    export abstract class LinkItem extends Link implements ItemConfig {
         private static NO_CONSTRUCTOR_CONFIG: string = "No config provided for LinkItem"
 
-        constructor(aItemInfo: Item) {
+        constructor(aItemInfo: ItemConfig) {
             super();
 
             if (!aItemInfo) {
