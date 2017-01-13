@@ -29,7 +29,7 @@ module jm.core {
         (aError?: any): void;
     }
 
-    export class Step extends LinkItem implements Task {
+    export class Step extends LinkItem<Step> implements Task {
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
@@ -64,8 +64,8 @@ module jm.core {
                         if (this.canInteract()) {
                             this.interact(aOnResolve, aOnReject);
                         } else {
-                            //this.stepToNext();
-                            aOnResolve(this);
+                            this.finish(aOnResolve, aOnReject);
+                            //aOnResolve(this);
                         }
 
                     },
@@ -118,7 +118,8 @@ module jm.core {
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
 
                 if (aInteractionSuccess) {
-                    aOnResolve(this);
+                    //aOnResolve(this);
+                    this.finish(aOnResolve, aOnReject);
                 } else {
                     aOnReject(Step.MSG_INTERACTION_UNSUCCESSFUL);
                 }
@@ -153,8 +154,17 @@ module jm.core {
             this.hasSuceeded = aSuccess;
         }
 
-        private stepToNext(): void {
-            //TODO!
+        private finish(aOnResolve : StepResolveCB, aOnReject: StepRejectCB): void {
+            let nextStep:Step = <Step>this.next;
+
+            if (nextStep === null) {
+                //TODO
+                //We've completed all the step
+                //Need to mark as complete
+                aOnResolve(this);
+            } else {
+                nextStep.begin(this.nav.query).then(aOnResolve, aOnReject)
+            }
         }
 
         private screenShotCues: ScreenshotCue[];

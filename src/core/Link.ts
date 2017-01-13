@@ -1,7 +1,7 @@
 module jm.core {
-    export abstract class Link {
+    export abstract class Link<T> {
 
-        public static chain(...aLinks: Link[]): Link {
+        public static chain<T>(...aLinks: Link<T>[]): Link<T> {
             let linkCount: number;
 
             function getLinkCount(): number {
@@ -16,25 +16,25 @@ module jm.core {
                     Link.break(aLinks[0]);
                 }
 
-                return aLinks.reduceRight((aLast: Link, aPrev: Link) => {
+                return aLinks.reduceRight((aLast: Link<T>, aPrev: Link<T>) => {
                     aLast.prev = aPrev;
                     return aPrev;
                 })
             }
         }
 
-        public static break(...aLinks: Link[]): void {
-            return aLinks.forEach((aLink: Link) => {
+        public static break<T>(...aLinks: Link<T>[]): void {
+            return aLinks.forEach((aLink: Link<T>) => {
                 aLink.prev = null;
                 aLink.next = null;
             })
         }
 
-        public get prev() : Link {
+        public get prev() : Link<T> {
             return this.nextLink;
         }
 
-        public set prev(aPrevLink: Link) {
+        public set prev(aPrevLink: Link<T>) {
             if (aPrevLink === this.prevLink) {
                 return;
             }
@@ -52,11 +52,11 @@ module jm.core {
             }
         }
 
-        public get next() : Link {
+        public get next() : Link<T> {
             return this.nextLink;
         }
 
-        public set next(aNextLink: Link) {
+        public set next(aNextLink: Link<T>) {
             if (aNextLink === this.nextLink) {
                 return;
             }
@@ -74,7 +74,7 @@ module jm.core {
             }
         }
 
-        private linkToSetNotSelf(aLinkToAttach: Link): boolean {
+        private linkToSetNotSelf(aLinkToAttach: Link<T>): boolean {
             if (aLinkToAttach === this) {
                 throw new Error("Link cannot be linked to itself");
             } else {
@@ -82,8 +82,8 @@ module jm.core {
             }
         }
 
-        private nextLink: Link = null;
-        private prevLink: Link = null;
+        private nextLink: Link<T> = null;
+        private prevLink: Link<T> = null;
     }
 }
 

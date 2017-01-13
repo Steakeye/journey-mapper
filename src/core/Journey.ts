@@ -18,7 +18,7 @@ module jm.core {
         //modules: string[];
     }
 
-    export class Journey extends LinkItem {
+    export class Journey extends LinkItem<Journey> {
         private static MSG_FAILED_TO_LOAD: string = "Failed to load:";
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
@@ -66,12 +66,14 @@ module jm.core {
 
         private makeStepResolveHandler(): StepResolveCB {
             return (aValue: Step) => {
-                this.currentStep = <Step>aValue.next;
+                let nextStep = <Step>aValue.next;
 
-                if (this.currentStep === null) {
+                if (nextStep === null) {
                     //TODO
                     //We've completed all the step
                     //Need to mark as complete
+                } else {
+                    nextStep
                 }
             }
         }

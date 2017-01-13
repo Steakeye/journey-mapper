@@ -24,7 +24,7 @@ module jm.core {
                 });
 
                 //Link journeys
-                this.currentJourney = <Journey>Journey.chain(...this.journeys);
+                this.currentJourney = <Journey>Journey.chain<Journey>(...this.journeys);
 
                 this.id = aJourneysConfig.id;
                 this.title = aJourneysConfig.title;
