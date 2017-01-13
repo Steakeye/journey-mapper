@@ -36,27 +36,19 @@ module jm.core {
         }
 
         public begin(aCurrentState: SQuery| JQuery) : void {
-            let onLoadCue: ScreenshotCue = Step.SCREENSHOT_CUES.onLoad;
-
-            //Check for screenshot requirement
-            if ((<ModernArray<ScreenshotCue>>this.screenShotCues).includes(onLoadCue)) {
-                this.nav.takeScreenshot().then(this.makeScreenShotSaver(onLoadCue));
-            }
+            this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
 
             this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
+                let interaction: Promise<DeferredQuery>;
+
                 this.setValidation(true, true);
 
-                //this.interact(aCurrentState).then((aCurrentState: DeferredQuery) => {
-                this.interact(this.nav.query).then((aCurrentState: DeferredQuery) => {
-                    //TODO
-                    console.log('interact.then()');
-                    this.handleCompletedInteraction();
-                },
-                (aErr: any) => {
-                    //TODO
-                    console.log('interact.reject(): ' + aErr);
-                    this.handleFailedInteraction();
-                });
+                if (this.canInteract()) {
+                    this.interact();
+                } else {
+                    this.stepToNext();
+                }
+
             },
             (aErr: string) => {
                 this.setValidation(true, false);
@@ -102,8 +94,34 @@ module jm.core {
             //TODO
         }
 
-        private interact(aState: DeferredQuery) : Promise<DeferredQuery> {
-            return this.interactor(this, aState, this.errorHandler);
+        private canInteract(): boolean {
+            return !!this.interactor;
+        }
+
+        private interact() : void {
+            this.interactor(this, this.nav.query, this.errorHandler).then((aInteractionSuccess: boolean) => {
+                console.log('interact.then(): ' + aInteractionSuccess);
+                    this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
+
+
+                    if (aInteractionSuccess) {
+                    this.handleCompletedInteraction();
+                } else {
+                    this.handleFailedInteraction();
+                }
+            },
+            (aErr: any) => {
+                console.log('interact.reject(): ' + aErr);
+                this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onInteract);
+                this.handleFailedInteraction();
+            });
+        }
+
+        private takeScreenShotIfCueExists(aCueName: ScreenshotCue): void {
+            //Check for screen-shot requirement
+            if ((<ModernArray<ScreenshotCue>>this.screenShotCues).includes(aCueName)) {
+                this.nav.takeScreenshot().then(this.makeScreenShotSaver(aCueName));
+            }
         }
 
         private makeScreenShotSaver(aCueName: ScreenshotCue): (aData: string) => void {
@@ -117,11 +135,15 @@ module jm.core {
             this.isValid = aPassed;
         }
 
+        private stepToNext(): void {
+            //TODO!
+        }
+
         private screenShotCues: ScreenshotCue[];
 
         private screenShots: ScreenShotMap = {};
 
-        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<DeferredQuery>;
+        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
 
         private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
 
