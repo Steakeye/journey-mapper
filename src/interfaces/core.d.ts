@@ -54,5 +54,5 @@ interface NavigatorAdaptor {
 }
 
 interface AssetAdaptor<JourneyDTO> {
-    saveScreenShots<JourneyDTO>(aJourney: JourneyDTO): Promise<void>
+    saveScreenShots<JourneyDTO>(aJourney: JourneyDTO): Promise<string[]>
 }

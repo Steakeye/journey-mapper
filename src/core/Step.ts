@@ -63,6 +63,7 @@ module jm.core {
                     },
                     (aErr: string) => {
                         this.setValidation(true, false);
+                        this.setCompletion(false);
                         this.errorHandler(Step.MSG_INCORRECT_STATE);
                         aOnReject(Step.MSG_INCORRECT_STATE)
                     });
@@ -161,6 +162,8 @@ module jm.core {
 
         private finish(aOnResolve : StepResolveCB, aOnReject: StepRejectCB): void {
             let nextStep:Step = <Step>this.next;
+
+            this.setCompletion(true);
 
             if (nextStep === null) {
                 //TODO
