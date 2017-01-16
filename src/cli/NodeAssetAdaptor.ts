@@ -38,7 +38,7 @@ module jm.cli {
         private static FILE_EXT_SCREEN_SHOT: string = 'png';
 
         private static getResolvedPath(aJourney: JourneyDTO, aStep: StepDTO, aImage: ImageDTO): string {
-            let successOrFailFragment: string = aStep.succeeded ? NodeAssetAdaptor.FILENAME_FRAG_SUCCESS: NodeAssetAdaptor.FILENAME_FRAG_FAIL;
+            let successOrFailFragment: string = aStep.succeeded ? NodeAssetAdaptor.FILENAME_FRAG_SUCCESS : NodeAssetAdaptor.FILENAME_FRAG_FAIL;
 
             return [aJourney.id, aStep.id, aImage.name, successOrFailFragment, NodeAssetAdaptor.FILE_EXT_SCREEN_SHOT].join('.')
         }
@@ -55,8 +55,8 @@ module jm.cli {
         }
 
         private static doScreenShotSaving(aMappings: PathValuePair[]): Promise<string>[] {
-            function makeScreenShotSaver(aMapping: PathValuePair): (aOnResolve : ScreenShotResolveCB, aOnReject: ScreenShotRejectCB) => void  {
-                return function screenShotSaver(aOnResolve : ScreenShotResolveCB, aOnReject: ScreenShotRejectCB) {
+            function makeScreenShotSaver(aMapping: PathValuePair): (aOnResolve: ScreenShotResolveCB, aOnReject: ScreenShotRejectCB) => void {
+                return function screenShotSaver(aOnResolve: ScreenShotResolveCB, aOnReject: ScreenShotRejectCB) {
                     let pathToWriteTo: string = aMapping.path;
 
                     fs.writeFile(pathToWriteTo, aMapping.value, 'base64', function (aErr) {
