@@ -14,8 +14,10 @@
     { "$ref": "../pages/doodle_page.json" },
     {
       "id": "thirdPage",
-      "title": "Pointless Page",
-      "description": "3rd page for Google."
+      "title": "Google Doodle About Page",
+      "description": "This page tells the history of the Google Doodle.",
+      "screenShots": ["on_load"],
+      "validator": { "$ref": "../../validators/is_google_doodle_about.js" }
     }
   ]
 }

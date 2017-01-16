@@ -2,5 +2,6 @@
     "id": "doodle",
     "name": "Doodle page",
     "description": "Here we are on the Google Doodle view",
-    "url": "http://localhost:9938/mdtp/designatory-details/"
+    "url": "http://localhost:9938/mdtp/designatory-details/",
+    "actions": { "$ref": "../../actions/find_about_doodles.js" }
 }
