@@ -1,4 +1,4 @@
-import { LinkItem } from './LinkItem'
+import { LinkTask } from './LinkTask'
 
 module jm.core {
 
@@ -29,7 +29,7 @@ module jm.core {
         (aError?: any): void;
     }
 
-    export class Step extends LinkItem<Step> implements Task {
+    export class Step extends LinkTask<Step> {
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
@@ -42,14 +42,6 @@ module jm.core {
             super(aStep);
 
             this.build(aStep);
-        }
-
-        public get complete(): boolean {
-            return this.isComplete;
-        }
-
-        public get succeeded(): boolean {
-            return this.hasSuceeded;
         }
 
         public begin(aCurrentState: SQuery| JQuery) : Promise<Step> {
@@ -174,10 +166,6 @@ module jm.core {
         private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
 
         private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
-
-        private isComplete : boolean = false;
-
-        private hasSuceeded: boolean = false;
 
         private hasBeenValidated: boolean = false;
 

@@ -1,7 +1,7 @@
 ///<reference path="../interfaces/core.d.ts" />
 
 import { IJourney } from '../interfaces/IJourney';
-import { LinkItem } from './LinkItem'
+import { LinkTask } from './LinkTask'
 import { Step, StepConfig, StepResolveCB, StepRejectCB } from './Step'
 import { applyPropertiesFromSourceToTarget } from '../core_utils/Obj'
 
@@ -18,7 +18,7 @@ module jm.core {
         //modules: string[];
     }
 
-    export class Journey extends LinkItem<Journey> {
+    export class Journey extends LinkTask<Journey> implements Task {
         private static MSG_FAILED_TO_LOAD: string = "Failed to load:";
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
@@ -27,6 +27,14 @@ module jm.core {
             super(aJourney);
 
             this.build(aJourney)
+        }
+
+        public get complete(): boolean {
+            return this.isComplete;
+        }
+
+        public get succeeded(): boolean {
+            return this.hasSuceeded;
         }
 
         public begin(): void {
