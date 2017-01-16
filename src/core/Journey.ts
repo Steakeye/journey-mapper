@@ -86,15 +86,21 @@ module jm.core {
                     //TODO
                     //We've completed all the step
                     //Need to mark as complete
+                    this.processScreenShotData()
                 } else {
                     nextStep
                 }
             }
         }
+
         private makeStepRejectHandler(): StepRejectCB {
             return (aError: any) => {
                 //TODO!
             }
+        }
+
+        private processScreenShotData(): Promise<string[]> {
+            return this.saver.saveScreenShots(this)
         }
     }
 }
