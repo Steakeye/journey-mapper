@@ -11,7 +11,7 @@ module jm.core {
         onInteract: ScreenshotCue_onInteract;
     }
 
-    interface ScreenShotMap {
+    export interface ScreenShotMap {
         on_load?: string;
         on_interact?: string;
     }
@@ -67,6 +67,19 @@ module jm.core {
                         aOnReject(Step.MSG_INCORRECT_STATE)
                     });
             })
+        }
+
+        public getDTO(): StepDTO {
+            let screenShots:ImageDTO[] = this.screenShots.slice();
+
+            return {
+                id: this.idVal,
+                title: this.titleVal,
+                description: this.descVal,
+                complete: this.isComplete,
+                succeeded: this.hasSuceeded,
+                screenShots: screenShots
+            }
         }
 
         private build(aStep: StepConfig): void {
@@ -126,13 +139,13 @@ module jm.core {
         private takeScreenShotIfCueExists(aCueName: ScreenshotCue): void {
             //Check for screen-shot requirement
             if ((<ModernArray<ScreenshotCue>>this.screenShotCues).includes(aCueName)) {
-                this.nav.takeScreenshot().then(this.makeScreenShotSaver(aCueName));
+                this.nav.takeScreenShot().then(this.makeScreenShotSaver(aCueName));
             }
         }
 
         private makeScreenShotSaver(aCueName: ScreenshotCue): (aData: string) => void {
             return (aData: string) => {
-                this.screenShots[aCueName] = aData;
+                this.screenShots.push({ name: aCueName, value: aData });
             }
         }
 
@@ -161,7 +174,7 @@ module jm.core {
 
         private screenShotCues: ScreenshotCue[];
 
-        private screenShots: ScreenShotMap = {};
+        private screenShots: ImageDTO[] = [];
 
         private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
 

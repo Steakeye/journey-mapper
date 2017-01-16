@@ -1,21 +1,16 @@
 ///<reference path="../interfaces/core.d.ts" />
 
-import { IJourney } from '../interfaces/IJourney';
 import { LinkTask } from './LinkTask'
 import { Step, StepConfig, StepResolveCB, StepRejectCB } from './Step'
 import { applyPropertiesFromSourceToTarget } from '../core_utils/Obj'
 
 module jm.core {
     export interface JourneyConfig extends ItemConfig {
-        //[index: string]: any;
         id: string;
         title: string;
         description?: string;
         startURL: string;
-        //archive: string;
-        //thumbnails: string[];
         steps: StepConfig[];
-        //modules: string[];
     }
 
     export class Journey extends LinkTask<Journey> implements Task {
@@ -23,7 +18,7 @@ module jm.core {
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
 
-        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor, private errorFunc: BasicErrorHandler) {
+        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor, private saver: AssetAdaptor<Journey>, private errorFunc: BasicErrorHandler) {
             super(aJourney);
 
             this.build(aJourney)
@@ -48,6 +43,17 @@ module jm.core {
                 this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
             });
 
+        }
+
+        public getDTO(): JourneyDTO {
+            return {
+                id: this.idVal,
+                title: this.titleVal,
+                description: this.descVal,
+                complete: this.isComplete,
+                succeeded: this.hasSuceeded,
+                steps: <StepDTO[]>this.steps.map((aStep: Step) => aStep.getDTO())
+            }
         }
 
         private startURL: string;

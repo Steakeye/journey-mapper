@@ -44,7 +44,7 @@ module jm.cli {
             return this.webDriver.getCurrentUrl();
         }
 
-        public takeScreenshot(): Promise<string> {
+        public takeScreenShot(): Promise<string> {
             return this.webDriver.takeScreenshot()
         }
 

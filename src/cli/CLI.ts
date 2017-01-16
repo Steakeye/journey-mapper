@@ -8,6 +8,7 @@ import ErrorHandler from './ErrorHandler';
 import JSONLoader from './JSONLoader';
 import JSONPropertyResolver from './JSONPropertyResolver';
 import NavAdaptor from './SeleniumNavAdaptor';
+import AssetAdaptor from './NodeAssetAdaptor';
 import { IJourneys } from '../interfaces/IJourney';
 import { Journeys, JourneysConfig } from '../core/Journeys';
 
@@ -169,7 +170,7 @@ module cli {
 
         private buildJourneys(aJourneysConf: JourneysConfig): Promise<Journeys> {
             //console.log('buildJourneys');
-            let journeys = new Journeys(ErrorHandler, new NavAdaptor);
+            let journeys = new Journeys(ErrorHandler, new NavAdaptor, new AssetAdaptor);
 
             journeys.build(aJourneysConf);
 
