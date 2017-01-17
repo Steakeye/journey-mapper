@@ -288,17 +288,14 @@ declare class SQuery extends Promise<SQuery> {
     add(mix:any): SQuery;
     resolve<T>(value?: T | Thenable<T>): SQuery;
     reject(error: any): SQuery;
-    //reject<T>(error: T): SQuery;
 }
 
 interface SQStatic {}
 
-/*declare module "selenium-query" {
-    var SQ:SQueryStatic
-    export = SQ;
-}*/
+interface WebDriverOptions {}
+
 declare module "selenium-query" {
-    //import * as sw from "selenium-webdriver";
+
     import {WebDriver, WebElement, Builder} from "selenium-webdriver";
 
     interface WebDriverOptions {
@@ -313,7 +310,6 @@ declare module "selenium-query" {
         setLogging?(options: WebDriverOptions): void;
     }
 
-
     interface SQueryStatic {
         (target: WebDriver | WebElement | WebElement[] | SQuery | SQuery[]): SQuery;
         load(url:string, config?:WebDriverOptions): SQuery;
@@ -321,7 +317,6 @@ declare module "selenium-query" {
         setDriver(driver: any): void;
         getDriver(): any;
     }
-
 
     var SQ:SQueryStatic;
     export = SQ;

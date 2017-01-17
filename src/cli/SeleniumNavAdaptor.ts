@@ -6,8 +6,16 @@ import { WebDriver } from 'selenium-webdriver';
 //const SQuery = require('selenium-query');
 
 module jm.cli {
+    export type WebDriverBrowserOption_Chrome = "Chrome";
+    export type WebDriverBrowserOption_Firefox = "Firefox";
+    export type WebDriverBrowserOption = WebDriverBrowserOption_Chrome | WebDriverBrowserOption_Firefox;
+
+    export const WebDriverBrowserOption_Chrome_Val: WebDriverBrowserOption_Chrome = "Chrome";
+    export const WebDriverBrowserOption_Firefox_Val: WebDriverBrowserOption_Firefox = "Firefox";
+
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
         constructor() {
+            this.initWebDriver();
         }
 
         public goTo(aUrl: string): Promise<SQuery> {
@@ -49,8 +57,37 @@ module jm.cli {
         }
 
         private seleniumWrapper:SQStatic = SQuery;
-        private webDriver:WebDriver = SQuery.build();
+        private webDriver:WebDriver;
+        //private webDriver:WebDriver = SQuery.build();
+        //private webDriver:WebDriver = SQuery.build({ name: "Firefox"});
+        //private webDriver:WebDriver = SQuery.build({ name: ""});
         private queryInstance:SQuery = SQuery(this.webDriver);
+
+        private initWebDriver(aBrowser:WebDriverBrowserOption = WebDriverBrowserOption_Chrome_Val): void {
+            function makeFFConfig() {
+                return {
+                    name: WebDriverBrowserOption_Firefox_Val,
+                    setBinaryPath: function (options: any) {
+                        let fnName: string = "setBinary";
+                        if (typeof options[fnName] !== "function") {
+                            throw Error('Function to override setBinaryPath not found');
+                        }
+
+                        if (this.binaryPath) {
+                            options[fnName](this.binaryPath);
+                        }
+                    },
+                    setArguments: function (aOptions: any) {
+
+                    },
+                    setLogging: function (aOptions: any) {
+                        aOptions.setLoggingPreferences({});
+                    }
+                };
+            }
+
+            this.webDriver = SQuery.build(aBrowser === WebDriverBrowserOption_Firefox_Val ? makeFFConfig(): undefined);
+        }
     }
 }
 
