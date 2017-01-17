@@ -77,32 +77,6 @@ module cli {
 
         }
 
-/*        public convertFiles(): void {
-            let fileConverter: FileConverter,
-                pathMapper: PathMapper,
-                fileMappings: MappingPair[];
-
-            function convert(aFrom: string, aTo: string) {
-                fileConverter = new FileConverter(aFrom, aTo, new FormatTranslator());
-                fileConverter.convert();
-            }
-
-            if (this.outputType === OutputType.FILE) {
-                //Just use the file converter on one source
-                convert(this.sourcePath, this.outputPath);
-            } else {
-                //Assume is directory
-                //Get all the files in the directory
-                pathMapper = new PathMapper(this.sourcePath, this.outputPath);
-                //Create mappings to desitnations
-                fileMappings = pathMapper.generatePaths();
-                //Iterate over list of files, converting one by one
-                fileMappings.forEach((aMapping: MappingPair) => {
-                    convert(aMapping.from, aMapping.to);
-                });
-            }
-        }*/
-
         private sourcePath: string;
         private outputPath: string;
         private outputType: OutputType;
