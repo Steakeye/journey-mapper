@@ -86,9 +86,17 @@ module jm.core {
                     //TODO
                     //We've completed all the step
                     //Need to mark as complete
-                    this.processScreenShotData()
+                    this.processScreenShotData().then((aPathsSaved: string[]) => {
+                        console.log('we saved some screenshots');
+                    },
+                    (aError: any) => {
+                        console.log('There was an error saving screenshots: ', aError);
+                    }
+                    );
                 } else {
-                    nextStep
+                    //TODO
+                    //If the step isn't the last one then something went wrong,
+                    //we should probably interrogate the instance and report a failed journey
                 }
             }
         }
