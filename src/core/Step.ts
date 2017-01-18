@@ -52,6 +52,7 @@ module jm.core {
         }
 
         public begin(aCurrentState: SQuery| JQuery) : Promise<Step> {
+            super.begin();
             return new Promise<Step>((aOnResolve : StepResolveCB, aOnReject: StepRejectCB) => {
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
 
@@ -84,6 +85,7 @@ module jm.core {
                 id: this.idVal,
                 title: this.titleVal,
                 description: this.descVal,
+                started: this.hasStarted,
                 complete: this.isComplete,
                 succeeded: this.hasSuceeded,
                 screenShots: screenShots

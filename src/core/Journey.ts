@@ -13,7 +13,7 @@ module jm.core {
         steps: StepConfig[];
     }
 
-    export class Journey extends LinkTask<Journey> implements Task {
+    export class Journey extends LinkTask<Journey> {
         private static MSG_FAILED_TO_LOAD: string = "Failed to load:";
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
@@ -32,7 +32,9 @@ module jm.core {
             return this.hasSuceeded;
         }
 
-        public begin(): void {
+        public begin(): Promise<Journey> {
+            super.begin();
+
             let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
                 stepResolve: StepResolveCB = this.makeStepResolveHandler(),
                 stepReject: StepRejectCB = this.makeStepResolveHandler();
@@ -43,6 +45,7 @@ module jm.core {
                 this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
             });
 
+            return Promise.resolve(this);
         }
 
         public getDTO(): JourneyDTO {
@@ -50,6 +53,7 @@ module jm.core {
                 id: this.idVal,
                 title: this.titleVal,
                 description: this.descVal,
+                started: this.hasStarted,
                 complete: this.isComplete,
                 succeeded: this.hasSuceeded,
                 steps: <StepDTO[]>this.steps.map((aStep: Step) => aStep.getDTO())

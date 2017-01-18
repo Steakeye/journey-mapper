@@ -14,9 +14,14 @@ interface Item extends ItemConfig {
     assignMembers(aProperties: ItemConfig): void;
 }
 
-interface Task {
+interface TaskProto {
+    started: boolean;
     complete: boolean;
     succeeded: boolean;
+}
+
+interface ActionableTask extends TaskProto {
+    begin(): Promise<ActionableTask>
 }
 
 interface ValueDTO {
@@ -28,7 +33,7 @@ interface ImageDTO extends ValueDTO {
     value: string;
 }
 
-interface TaskDTO extends ItemConfig, Task {
+interface TaskDTO extends ItemConfig, TaskProto {
 
 }
 
