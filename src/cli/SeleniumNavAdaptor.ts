@@ -16,6 +16,7 @@ module jm.cli {
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
         constructor() {
             this.initWebDriver();
+            this.queryInstance = SQuery(this.webDriver);
         }
 
         public goTo(aUrl: string): Promise<SQuery> {
@@ -58,10 +59,7 @@ module jm.cli {
 
         private seleniumWrapper:SQStatic = SQuery;
         private webDriver:WebDriver;
-        //private webDriver:WebDriver = SQuery.build();
-        //private webDriver:WebDriver = SQuery.build({ name: "Firefox"});
-        //private webDriver:WebDriver = SQuery.build({ name: ""});
-        private queryInstance:SQuery = SQuery(this.webDriver);
+        private queryInstance:SQuery;
 
         private initWebDriver(aBrowser:WebDriverBrowserOption = WebDriverBrowserOption_Chrome_Val): void {
             function makeFFConfig() {
