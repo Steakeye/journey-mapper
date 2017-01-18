@@ -26,12 +26,8 @@ module jm.core {
         validator?:string;
     }
 
-    export interface StepResolveCB {
-        (aValue?: Step): void;
-    }
-    export interface StepRejectCB {
-        (aError?: any): void;
-    }
+    export type StepResolveCB = PromiseResolveCB<Step, void>;
+    export type StepRejectCB = PromiseRejectCB<any>;
 
     export class Step extends LinkTask<Step> {
         private static KEY_VALIDATOR: ImportedMemberKey_Validator = 'validator';
@@ -172,11 +168,6 @@ module jm.core {
         private setValidation(aValidationAttempt:boolean, aPassed: boolean): void {
             this.hasBeenValidated = aValidationAttempt;
             this.isValid = aPassed;
-        }
-
-        private setCompletion(aSuccess: boolean): void {
-            this.isComplete = true;
-            this.hasSuceeded = aSuccess;
         }
 
         private finish(aOnResolve : StepResolveCB, aOnReject: StepRejectCB): void {

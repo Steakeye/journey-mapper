@@ -13,8 +13,13 @@ module jm.core {
         steps: StepConfig[];
     }
 
+
+    export type JourneyResolveCB = PromiseResolveCB<Journey, void>;
+    export type JourneyRejectCB = PromiseRejectCB<any>;
+
     export class Journey extends LinkTask<Journey> {
         private static MSG_FAILED_TO_LOAD: string = "Failed to load:";
+        private static MSG_STEP_PROMISE_EARLY_RESOLUTION: string = 'The Step promise appears to have resolved early, while it still has a next Step';
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
 
@@ -35,17 +40,27 @@ module jm.core {
         public begin(): Promise<Journey> {
             super.begin();
 
-            let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
+            /*let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
                 stepResolve: StepResolveCB = this.makeStepResolveHandler(),
-                stepReject: StepRejectCB = this.makeStepResolveHandler();
+                stepReject: StepRejectCB = this.makeStepRejectHandler();
 
             queryAsync.then((aQuery:DeferredQuery) => {
                 this.currentStep.begin(aQuery).then(stepResolve, stepReject);
             }, (aErr: any) => {
                 this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
-            });
+            });*/
+            return new Promise<Journey>((aOnResolve : JourneyResolveCB, aOnReject: JourneyRejectCB) => {
+                let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
+                    stepResolve: StepResolveCB = this.makeStepResolveHandler(aOnResolve, aOnReject),
+                    stepReject: StepRejectCB = this.makeStepRejectHandler(aOnReject);
 
-            return Promise.resolve(this);
+                queryAsync.then((aQuery: DeferredQuery) => {
+                    this.currentStep.begin(aQuery).then(stepResolve, stepReject);
+                }, (aErr: any) => {
+                    this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
+                });
+            });
+            //return Promise.resolve(this);
         }
 
         public getDTO(): JourneyDTO {
@@ -82,7 +97,7 @@ module jm.core {
             });
         }
 
-        private makeStepResolveHandler(): StepResolveCB {
+        private makeStepResolveHandler(aOnResolve : JourneyResolveCB, aOnReject: JourneyRejectCB): StepResolveCB {
             return (aValue: Step) => {
                 let nextStep = <Step>aValue.next;
 
@@ -98,16 +113,31 @@ module jm.core {
                     }
                     );
                 } else {
-                    //TODO
                     //If the step isn't the last one then something went wrong,
                     //we should probably interrogate the instance and report a failed journey
+                    aOnReject(`${Journey.MSG_STEP_PROMISE_EARLY_RESOLUTION}: ${this.id} - ${aValue.id} -> ${nextStep.id}`);
                 }
             }
         }
 
-        private makeStepRejectHandler(): StepRejectCB {
+        private finish(aOnResolve : JourneyResolveCB, aOnReject: JourneyRejectCB): void {
+            let nextStep:Journey = <Journey>this.next;
+
+            this.setCompletion(true);
+
+            if (nextStep === null) {
+                //TODO
+                //We've completed all the step
+                //Need to mark as complete
+                aOnResolve(this);
+            } else {
+                nextStep.begin().then(aOnResolve, aOnReject)
+            }
+        }
+
+        private makeStepRejectHandler(aOnReject: JourneyRejectCB): StepRejectCB {
             return (aError: any) => {
-                //TODO!
+                aOnReject(aError); //TODO: Add context here? Journey id?
             }
         }
 

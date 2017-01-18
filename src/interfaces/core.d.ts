@@ -49,6 +49,10 @@ interface BasicErrorHandler {
     (aError: string | Error): void
 }
 
+type PromiseResolveCB<T, U> = (aValue?: T) => U | Thenable<U>;
+
+type PromiseRejectCB<T> = (aError?: T) => void;
+
 type DeferredQuery = SQuery| JQuery;
 
 interface NavigatorAdaptor {

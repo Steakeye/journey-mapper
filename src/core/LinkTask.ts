@@ -25,6 +25,11 @@ module jm.core {
         protected hasStarted: boolean = false;
         protected isComplete : boolean = false;
         protected hasSuceeded: boolean = false;
+
+        protected setCompletion(aSuccess: boolean): void {
+            this.isComplete = true;
+            this.hasSuceeded = aSuccess;
+        }
     }
 }
 
