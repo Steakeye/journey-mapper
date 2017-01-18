@@ -27,7 +27,7 @@ interface Config extends IJourneys {
 
 module cli {
     export class CLI {
-        public static DEFAULT_CONFIG_PATH: string = process.cwd() + '/jmnconfig.json';
+        public static DEFAULT_CONFIG_PATH: string = path.resolve(process.cwd() + '/jmnconfig.json');
 
         private static JOURNEYS_FILE_ERROR: string = "Please provide a location from which to load journeys json.";
         private static JOURNEYS_PATH_NOT_SPECIFIED: string = "Journeys path not specifed. " + CLI.JOURNEYS_FILE_ERROR;
