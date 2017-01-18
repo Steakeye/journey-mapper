@@ -2,7 +2,7 @@
 ///<reference path="../../custom/definitions/selenium-query.d.ts" />
 ///<reference path="../../typings/index.d.ts" />
 import * as SQuery from 'selenium-query';
-import { WebDriver } from 'selenium-webdriver';
+import { WebDriver, Key } from 'selenium-webdriver';
 //const SQuery = require('selenium-query');
 
 module jm.cli {
@@ -10,10 +10,15 @@ module jm.cli {
     export type WebDriverBrowserOption_Firefox = "Firefox";
     export type WebDriverBrowserOption = WebDriverBrowserOption_Chrome | WebDriverBrowserOption_Firefox;
 
+    type KeyCode = string;
+    declare const Key:Key;
+
     export const WebDriverBrowserOption_Chrome_Val: WebDriverBrowserOption_Chrome = "Chrome";
     export const WebDriverBrowserOption_Firefox_Val: WebDriverBrowserOption_Firefox = "Firefox";
 
     export class SeleniumNavAdaptor implements NavigatorAdaptor {
+        private static findKey(aKeyName): KeyCode { return Key[aKeyName]; }
+
         constructor() {
             this.initWebDriver();
             this.queryInstance = SQuery(this.webDriver);
@@ -47,6 +52,13 @@ module jm.cli {
 
         public get queryStatic():SQStatic {
             return this.seleniumWrapper;
+        }
+
+        public sendKey(aQueryEl: SQuery, aKeyToSend: string): Promise<boolean> {
+            return aQueryEl.sendKeys(SeleniumNavAdaptor.findKey(aKeyToSend)).then(
+                (aQuary: SQuery) => { return true; },
+                (aError: any) => { return false; }
+                );
         }
 
         public getCurrentUrl(): Promise<string> {

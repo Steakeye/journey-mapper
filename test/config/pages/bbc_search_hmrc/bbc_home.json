@@ -1,0 +1,7 @@
+{
+    "id": "bbcHome",
+    "name": "BBC home page",
+    "description": "Here we are on the main BBC page",
+    "validator": { "$ref": "../../../validators/bbc/is_home.js" },
+    "actions": { "$ref": "../../../actions/bbc/search_hmrc.js" }
+}

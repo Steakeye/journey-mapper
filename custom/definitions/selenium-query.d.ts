@@ -288,6 +288,7 @@ declare class SQuery extends Promise<SQuery> {
     add(mix:any): SQuery;
     resolve<T>(value?: T | Thenable<T>): SQuery;
     reject(error: any): SQuery;
+    sendKeys(text:string):SQuery;
 }
 
 interface SQStatic {}
