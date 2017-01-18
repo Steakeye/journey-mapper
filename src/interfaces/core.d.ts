@@ -51,7 +51,7 @@ interface NavigatorAdaptor {
     goTo(aUrl: string): Promise<DeferredQuery>;
     getCurrentUrl(): Promise<string>;
     takeScreenShot(): Promise<string>;
-}
+    sendKey(aQueryEl: DeferredQuery, aKeyToSend: string): Promise<boolean>}
 
 interface AssetAdaptor<JourneyDTO> {
     saveScreenShots<JourneyDTO>(aJourney: JourneyDTO): Promise<string[]>

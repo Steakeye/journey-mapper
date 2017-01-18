@@ -1,4 +1,4 @@
-function feelingLucky(aStep, aQueryObj, aErrorFunc) {
+function searchForHMRC(aStep, aQueryObj, aErrorFunc) {
     //console.log('We got to the feeling luck func!');
 
 var textFieldToUse = aQueryObj.find('#orb-banner')
@@ -27,4 +27,4 @@ return textFieldToUse.then(function(value) {
     );
 }
 
-module.exports = feelingLucky;
+module.exports = searchForHMRC;

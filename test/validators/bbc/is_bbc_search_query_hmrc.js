@@ -1,4 +1,4 @@
-function isGoogleHome(aStep, aQueryObj, aErrorFunc) {
+function isBBCSearchHMRCResults(aStep, aQueryObj, aErrorFunc) {
     var urlToMatch = "http://www.bbc.co.uk/search?q=HMRC";
 
     console.log('We got to BBC search query-is "HMRC" validator!');
@@ -26,4 +26,4 @@ function isGoogleHome(aStep, aQueryObj, aErrorFunc) {
     return new Promise(getUrlAndResolve);
 }
 
-module.exports = isGoogleHome;
+module.exports = isBBCSearchHMRCResults;

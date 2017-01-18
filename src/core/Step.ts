@@ -6,6 +6,10 @@ module jm.core {
     type ScreenshotCue_onInteract = "on_interaction";
     type ScreenshotCue = ScreenshotCue_onLoad | ScreenshotCue_onInteract;
 
+    type ImportedMemberKey_Validator = 'validator';
+    type ImportedMemberKey_Interactor = 'interactor';
+    type ImportedMemberKey = ImportedMemberKey_Validator | ImportedMemberKey_Interactor;
+
     interface ScreenshotCueDictionary {
         onLoad: ScreenshotCue_onLoad;
         onInteract: ScreenshotCue_onInteract;
@@ -30,6 +34,9 @@ module jm.core {
     }
 
     export class Step extends LinkTask<Step> {
+        private static KEY_VALIDATOR: ImportedMemberKey_Validator = 'validator';
+        private static KEY_INTERACTOR: ImportedMemberKey_Interactor = 'interactor';
+        private static MSG_MEMBER_NOT_RESOLVED: string = "Imported Step method could not be resolved";
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
@@ -84,18 +91,28 @@ module jm.core {
         }
 
         private build(aStep: StepConfig): void {
-            let path:string = aStep.actions;
+            let validatorPath:string = aStep.validator;
 
-            if (path) {
-                this.interactor = require(path);
+            if (validatorPath) {
+                this.tryToAssignImportedMember(Step.KEY_VALIDATOR, validatorPath);
+            } else {
+                this[Step.KEY_VALIDATOR] = (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => true;
             }
 
-            //Assign validator
-            path = aStep.validator;
-            this.validator = path ? require(path) : (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aNavigator: NavigatorAdaptor) => true;
+            this.tryToAssignImportedMember(Step.KEY_INTERACTOR, aStep.actions);
 
             //Add screenshot cues
             this.screenShotCues = aStep.screenShots || [];
+        }
+
+        private tryToAssignImportedMember(aMember: ImportedMemberKey, aPathToResolve: string): void {
+            if (aPathToResolve) {
+                try {
+                    this[aMember] = require(aPathToResolve);
+                } catch (aErr) {
+                    this.errorHandler(`${Step.MSG_MEMBER_NOT_RESOLVED}: ${aMember} - ${aErr}`);
+                }
+            }
         }
 
         private isExpectedState(aCurrentState: SQuery| JQuery) : Promise<boolean> {
@@ -179,9 +196,9 @@ module jm.core {
 
         private screenShots: ImageDTO[] = [];
 
-        private interactor: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
+        private interactor?: (aCurrentStep: Step, aCurrentState: DeferredQuery, aErrHandler: BasicErrorHandler) => Promise<boolean>;
 
-        private validator?: (aCurrentStep: Step, aCurrentState: SQuery| JQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
+        private validator?: (aCurrentStep: Step, aCurrentState: DeferredQuery, aErrHandler: BasicErrorHandler) => boolean | Promise<boolean>;
 
         private hasBeenValidated: boolean = false;
 

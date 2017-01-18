@@ -1,4 +1,4 @@
-function isGoogleHome(aStep, aQueryObj, aErrorFunc) {
+function isBBCHome(aStep, aQueryObj, aErrorFunc) {
     var urlToMatch = "http://www.bbc.co.uk/";
 
     console.log('We got to BBC home validator!');
@@ -26,4 +26,4 @@ function isGoogleHome(aStep, aQueryObj, aErrorFunc) {
     return new Promise(getUrlAndResolve);
 }
 
-module.exports = isGoogleHome;
+module.exports = isBBCHome;

@@ -1,4 +1,4 @@
 [
-    { "$ref": "./bbc_home.json" },
-    { "$ref": "./bbc_search_query_hmrc.json" }
+    { "$ref": "./bbc_search_hmrc/bbc_home.json" },
+    { "$ref": "./bbc_search_hmrc/bbc_search_query_hmrc.json" }
 ]

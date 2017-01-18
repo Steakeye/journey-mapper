@@ -56,7 +56,7 @@ module jm.cli {
 
         public sendKey(aQueryEl: SQuery, aKeyToSend: string): Promise<boolean> {
             return aQueryEl.sendKeys(SeleniumNavAdaptor.findKey(aKeyToSend)).then(
-                (aQuary: SQuery) => { return true; },
+                (aQuery: SQuery) => { return true; },
                 (aError: any) => { return false; }
                 );
         }

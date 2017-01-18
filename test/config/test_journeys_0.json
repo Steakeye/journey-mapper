@@ -8,7 +8,7 @@
       "title": "BBC homepage to BBC 'HMRC' search results",
       "description": "This is just a simple journey to go from the BBC home page to search results for 'HMRC'",
       "startURL": "http://www.bbc.co.uk/",
-      "steps": { "$ref": "../pages/bbc_search_hmrc.json" }
+      "steps": { "$ref": "./pages/bbc_search_hmrc.json" }
     }
   ]
 }
