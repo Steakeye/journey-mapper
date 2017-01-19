@@ -9,17 +9,12 @@ return textFieldToUse.then(function(value) {
          //console.log('value for input[name="btnI"]:' + value);
          if (value.length) {
              return textFieldToUse.click().type(searchQuery).then(function(aVal) {
-                 //return aStep.nav.sendKey(aVal || aQueryObj, "ENTER");
-                 //return aStep.nav.sendKey(aVal, "ENTER");
-                 return aQueryObj.find(':focus').then(function(aVal) {
-                     aStep.nav.sendKey(aVal, "ENTER");
-                 });
+                return aQueryObj.find(':focus');
+             }).then(function(aVal) {
+                 return aStep.nav.sendKey(aVal, "ENTER");
+             }).then(function() {
+                 return true;
              });
-             //then(function () {
-                 //return true;
-             /*}).then(function() {
-
-             });*/
          } else {
              return false;
          }

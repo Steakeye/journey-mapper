@@ -3,7 +3,7 @@ import { LinkTask } from './LinkTask'
 module jm.core {
 
     type ScreenshotCue_onLoad = "on_load";
-    type ScreenshotCue_onInteract = "on_interaction";
+    type ScreenshotCue_onInteract = "on_interact";
     type ScreenshotCue = ScreenshotCue_onLoad | ScreenshotCue_onInteract;
 
     type ImportedMemberKey_Validator = 'validator';
@@ -38,7 +38,7 @@ module jm.core {
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
         private static SCREENSHOT_CUES: ScreenshotCueDictionary  = {
             onLoad: "on_load",
-            onInteract: "on_interaction"
+            onInteract: "on_interact"
         };
 
         constructor(aStep: StepConfig, private nav: NavigatorAdaptor, private errorHandler:BasicErrorHandler) {
@@ -53,21 +53,19 @@ module jm.core {
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
 
                 this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
-                        let interaction: Promise<DeferredQuery>;
-
                         this.setValidation(true, true);
 
                         if (this.canInteract()) {
                             this.interact(aOnResolve, aOnReject);
                         } else {
                             this.finish(aOnResolve, aOnReject);
-                            //aOnResolve(this);
                         }
 
                     },
                     (aErr: string) => {
                         this.setValidation(true, false);
                         this.setCompletion(false);
+                        //TODO: We should allow the journey to end early depending on a flag instead of exiting the whole process
                         this.errorHandler(Step.MSG_INCORRECT_STATE);
                         aOnReject(Step.MSG_INCORRECT_STATE)
                     });
@@ -176,9 +174,6 @@ module jm.core {
             this.setCompletion(true);
 
             if (nextStep === null) {
-                //TODO
-                //We've completed all the step
-                //Need to mark as complete
                 aOnResolve(this);
             } else {
                 nextStep.begin(this.nav.query).then(aOnResolve, aOnReject)
