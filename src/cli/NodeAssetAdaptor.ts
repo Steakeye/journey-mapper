@@ -22,7 +22,7 @@ module jm.cli {
 
     const emptyString: string = '';
 
-    export class NodeAssetAdaptor implements AssetAdaptor<Journey> {
+    export class NodeAssetAdaptor implements AssetAdaptor {
         public static saveScreenShots(aJourney: Journey): Promise<string[]> {
             let journeyData: JourneyDTO = aJourney.getDTO();
             let steps: StepDTO[] = journeyData.steps;
@@ -96,6 +96,10 @@ module jm.cli {
             return NodeAssetAdaptor.saveScreenShots(aJourney);
         }
 
+        public saveCurrentAssets(aStep: StepDTO, aNav: NavigatorAdaptor): Promise<boolean> {
+            //TODO - saveCurrentAssets
+            return Promise.reject(false);
+        }
 
 
     }

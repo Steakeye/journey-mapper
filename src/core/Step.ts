@@ -10,6 +10,8 @@ module jm.core {
     type ImportedMemberKey_Interactor = 'interactor';
     type ImportedMemberKey = ImportedMemberKey_Validator | ImportedMemberKey_Interactor;
 
+    type NoSave = false;
+
     interface ScreenshotCueDictionary {
         onLoad: ScreenshotCue_onLoad;
         onInteract: ScreenshotCue_onInteract;
@@ -21,6 +23,7 @@ module jm.core {
     }
 
     export interface StepConfig extends ItemConfig {
+        saveContent?: boolean;
         screenShots?: ScreenshotCue[];
         actions?:string;
         validator?:string;
@@ -41,7 +44,7 @@ module jm.core {
             onInteract: "on_interact"
         };
 
-        constructor(aStep: StepConfig, private nav: NavigatorAdaptor, private errorHandler:BasicErrorHandler) {
+        constructor(aStep: StepConfig, private nav: NavigatorAdaptor, private saver: AssetAdaptor, private errorHandler:BasicErrorHandler) {
             super(aStep);
 
             this.build(aStep);
@@ -51,6 +54,8 @@ module jm.core {
             super.begin();
             return new Promise<Step>((aOnResolve : StepResolveCB, aOnReject: StepRejectCB) => {
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
+
+                this.saveAssetsIfRequired();
 
                 this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
                         this.setValidation(true, true);
@@ -150,6 +155,18 @@ module jm.core {
             });
         }
 
+        private saveAssetsIfRequired(): NoSave | Promise<boolean> {
+            let savingAssets: NoSave | Promise<boolean> = false;
+
+            //TODO
+
+            if (!this.saveContent) {
+                savingAssets = this.saver.saveCurrentAssets(this.getDTO(), this.nav);
+            }
+
+            return savingAssets;
+        }
+
         private takeScreenShotIfCueExists(aCueName: ScreenshotCue): void {
             //Check for screen-shot requirement
             if ((<ModernArray<ScreenshotCue>>this.screenShotCues).includes(aCueName)) {
@@ -181,6 +198,8 @@ module jm.core {
         }
 
         private screenShotCues: ScreenshotCue[];
+
+        private saveContent: boolean;
 
         private screenShots: ImageDTO[] = [];
 

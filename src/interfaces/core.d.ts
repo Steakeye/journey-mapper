@@ -62,6 +62,7 @@ interface NavigatorAdaptor {
     takeScreenShot(): Promise<string>;
     sendKey(aQueryEl: DeferredQuery, aKeyToSend: string): Promise<boolean>}
 
-interface AssetAdaptor<JourneyDTO> {
+interface AssetAdaptor {
     saveScreenShots<JourneyDTO>(aJourney: JourneyDTO): Promise<string[]>
+    saveCurrentAssets(aStep: StepDTO, aNav: NavigatorAdaptor): Promise<boolean>
 }

@@ -7,5 +7,9 @@
   "dependencies": {
     "mkdirp": "registry:npm/mkdirp#0.5.0+20160723033700",
     "selenium-webdriver": "registry:npm/selenium-webdriver#3.0.0-beta-2+20160908165836"
+  },
+  "devDependencies": {
+    "request": "registry:npm/request#2.69.0+20160428223725",
+    "website-scraper": "registry:dt/website-scraper#1.2.0+20161101130153"
   }
 }

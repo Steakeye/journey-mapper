@@ -14,7 +14,7 @@ module jm.core {
 
         private static MSG_ERROR_BEGIN_NO_JOURNEYS: string = "Cannot begin journeys without any journeys!";
 
-        constructor(private errorFunc: BasicErrorHandler, private navigator: NavigatorAdaptor, private assetManager: AssetAdaptor<Journey>) {
+        constructor(private errorFunc: BasicErrorHandler, private navigator: NavigatorAdaptor, private assetManager: AssetAdaptor) {
         }
 
         public build(aJourneysConfig: JourneysConfig): Promise<Journeys> {

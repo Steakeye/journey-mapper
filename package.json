@@ -47,7 +47,8 @@
     "json-refs": "^2.1.6",
     "mkdirp": "^0.5.1",
     "selenium-query": "^0.50.35",
-    "selenium-webdriver": "^3.0.1"
+    "selenium-webdriver": "^3.0.1",
+    "website-scraper": "^2.0.0"
   },
   "directories": {
     "doc": "docs"

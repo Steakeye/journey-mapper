@@ -23,7 +23,7 @@ module jm.core {
 
         private static MEMBERS_KEYS: string[] = ['startURL'];
 
-        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor, private saver: AssetAdaptor<Journey>, private errorFunc: BasicErrorHandler) {
+        constructor(aJourney: JourneyConfig, private nav: NavigatorAdaptor, private saver: AssetAdaptor, private errorFunc: BasicErrorHandler) {
             super(aJourney);
 
             this.build(aJourney)
@@ -93,7 +93,7 @@ module jm.core {
 
         private buildSteps(aStepsConfigs: StepConfig[]): void {
             aStepsConfigs.forEach((aStep: StepConfig) => {
-                this.steps.push(new Step(aStep, this.nav, this.errorFunc));
+                this.steps.push(new Step(aStep, this.nav, this.saver, this.errorFunc));
             });
         }
 
