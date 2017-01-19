@@ -102,17 +102,17 @@ module jm.core {
                 let nextStep = <Step>aValue.next;
 
                 if (nextStep === null) {
-                    //TODO
-                    //We've completed all the step
-                    //Need to mark as complete
                     this.processScreenShotData().then((aPathsSaved: string[]) => {
                         console.log('we saved some screenshots');
+                        this.finish(aOnResolve, aOnReject);
                     },
                     (aError: any) => {
                         console.log('There was an error saving screenshots: ', aError);
+                        this.finish(aOnResolve, aOnReject);
                     }
                     );
                 } else {
+                    this.setCompletion(false);
                     //If the step isn't the last one then something went wrong,
                     //we should probably interrogate the instance and report a failed journey
                     aOnReject(`${Journey.MSG_STEP_PROMISE_EARLY_RESOLUTION}: ${this.id} - ${aValue.id} -> ${nextStep.id}`);
