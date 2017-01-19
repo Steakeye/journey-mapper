@@ -2,5 +2,6 @@
     "id": "searchQueryHMRC",
     "name": "BBC search page - HMRC query",
     "description": "Here we are on the main BBC search page with results for 'HMRC'",
+    "screenShots": ["on_load"],
     "validator": { "$ref": "../../../validators/bbc/is_bbc_search_query_hmrc.js" }
 }

@@ -2,6 +2,7 @@
     "id": "bbcHome",
     "name": "BBC home page",
     "description": "Here we are on the main BBC page",
+    "screenShots": ["on_load", "on_interact"],
     "validator": { "$ref": "../../../validators/bbc/is_bbc_home.js" },
     "actions": { "$ref": "../../../actions/bbc/search_for_hmrc.js" }
 }
