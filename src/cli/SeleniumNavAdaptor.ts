@@ -2,7 +2,9 @@
 ///<reference path="../../custom/definitions/selenium-query.d.ts" />
 ///<reference path="../../typings/index.d.ts" />
 import * as SQuery from 'selenium-query';
-import { WebDriver, Key } from 'selenium-webdriver';
+//import { WebDriver, Key as SWKeys } from 'selenium-webdriver';
+import * as SW from 'selenium-webdriver';
+import { Key } from 'selenium-webdriver';
 //const SQuery = require('selenium-query');
 
 module jm.cli {
@@ -11,7 +13,8 @@ module jm.cli {
     export type WebDriverBrowserOption = WebDriverBrowserOption_Chrome | WebDriverBrowserOption_Firefox;
 
     type KeyCode = string;
-    declare const Key:Key;
+
+    const Key:Key = SW['Key'];
 
     export const WebDriverBrowserOption_Chrome_Val: WebDriverBrowserOption_Chrome = "Chrome";
     export const WebDriverBrowserOption_Firefox_Val: WebDriverBrowserOption_Firefox = "Firefox";
@@ -26,7 +29,7 @@ module jm.cli {
 
         public goTo(aUrl: string): Promise<SQuery> {
             let query: SQuery = this.queryInstance,
-                driver: WebDriver = this.webDriver;
+                driver: SW.WebDriver = this.webDriver;
 
             driver.get(aUrl).then(function () {
                 //query.resolve(query);
@@ -70,7 +73,7 @@ module jm.cli {
         }
 
         private seleniumWrapper:SQStatic = SQuery;
-        private webDriver:WebDriver;
+        private webDriver:SW.WebDriver;
         private queryInstance:SQuery;
 
         private initWebDriver(aBrowser:WebDriverBrowserOption = WebDriverBrowserOption_Chrome_Val): void {
