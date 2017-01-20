@@ -36,6 +36,7 @@ module jm.core {
         private static KEY_VALIDATOR: ImportedMemberKey_Validator = 'validator';
         private static KEY_INTERACTOR: ImportedMemberKey_Interactor = 'interactor';
         private static MSG_MEMBER_NOT_RESOLVED: string = "Imported Step method could not be resolved";
+        private static MSG_ASSET_SAVE_FAILED: string = "Assets for this step were unable to be failed";
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
@@ -53,19 +54,19 @@ module jm.core {
         public begin(aCurrentState: SQuery| JQuery) : Promise<Step> {
             super.begin();
             return new Promise<Step>((aOnResolve : StepResolveCB, aOnReject: StepRejectCB) => {
+                let assetSave: boolean | Promise<boolean>;
                 this.takeScreenShotIfCueExists(Step.SCREENSHOT_CUES.onLoad);
 
-                this.saveAssetsIfRequired();
+                assetSave = this.saveAssetsIfRequired();
+
+                if (!assetSave) {
+                    this.checkStateAndContinue(aCurrentState, aOnResolve, aOnReject);
+                } else {
+                    this.deferStateCheckAfterAssetSave(assetSave, aCurrentState, aOnResolve, aOnReject);
+                }
 
                 this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
-                        this.setValidation(true, true);
-
-                        if (this.canInteract()) {
-                            this.interact(aOnResolve, aOnReject);
-                        } else {
-                            this.finish(aOnResolve, aOnReject);
-                        }
-
+                        this.interactOrFinish(aOnResolve, aOnReject);
                     },
                     (aErr: string) => {
                         this.setValidation(true, false);
@@ -116,7 +117,38 @@ module jm.core {
             }
         }
 
-        private isExpectedState(aCurrentState: SQuery| JQuery) : Promise<boolean> {
+        private deferStateCheckAfterAssetSave(assetSave: Promise<boolean>, aCurrentState: DeferredQuery, aOnResolve: StepResolveCB, aOnReject: StepRejectCB): void {
+            const unknownsAssetErrorMessage: string = `${Step.MSG_ASSET_SAVE_FAILED}: ${this.id}`;
+
+            assetSave.then((aSaved:boolean) => {
+                if (aSaved) {
+                    this.checkStateAndContinue(aCurrentState, aOnResolve, aOnReject);
+                } else {
+                    aOnReject(unknownsAssetErrorMessage);
+                }
+            }, (aError: any) => {
+                let errorMessage: string = `${unknownsAssetErrorMessage} - ${aError}`;
+
+                this.errorHandler(errorMessage);
+                aOnReject(errorMessage)
+            });
+        }
+
+        private checkStateAndContinue(aCurrentState: DeferredQuery, aOnResolve: StepResolveCB, aOnReject: StepRejectCB): void {
+            this.isExpectedState(aCurrentState).then((aExpected: boolean) => {
+                    this.interactOrFinish(aOnResolve, aOnReject);
+                },
+                (aErr: any) => {
+                    let errorMessage: string = `${Step.MSG_INCORRECT_STATE}: ${this.id} - ${aErr}`;
+                    this.setValidation(true, false);
+                    this.setCompletion(false);
+                    //TODO: We should allow the journey to end early depending on a flag instead of exiting the whole process
+                    this.errorHandler(errorMessage);
+                    aOnReject(errorMessage)
+                });
+        }
+
+        private isExpectedState(aCurrentState: DeferredQuery) : Promise<boolean> {
             return new Promise<boolean>((resolve : (value?: boolean) => void, reject: (error?: any) => void) => {
                 let res = this.validator(this, aCurrentState, this.errorHandler);
 
@@ -130,6 +162,16 @@ module jm.core {
                     (<Promise<boolean>>res).then(resolve, reject);
                 }
             });
+        }
+
+        private interactOrFinish(aOnResolve: StepResolveCB, aOnReject: StepRejectCB): void {
+            this.setValidation(true, true);
+
+            if (this.canInteract()) {
+                this.interact(aOnResolve, aOnReject);
+            } else {
+                this.finish(aOnResolve, aOnReject);
+            }
         }
 
         private canInteract(): boolean {
@@ -160,7 +202,7 @@ module jm.core {
 
             //TODO
 
-            if (!this.saveContent) {
+            if (this.saveContent) {
                 savingAssets = this.saver.saveCurrentAssets(this.getDTO(), this.nav);
             }
 

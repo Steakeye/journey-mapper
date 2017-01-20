@@ -44,6 +44,7 @@ module jm.cli {
         private static FILENAME_FRAG_SUCCESS: string = 'success';
         private static FILENAME_FRAG_FAIL: string = 'fail';
         private static FILE_EXT_SCREEN_SHOT: string = 'png';
+        private static FILE_EXT_HTML: string = 'html';
 
         private static getResolvedPath(aJourney: JourneyDTO, aStep: StepDTO, aImage: ImageDTO): string {
             let successOrFailFragment: string = aStep.succeeded ? NodeAssetAdaptor.FILENAME_FRAG_SUCCESS : NodeAssetAdaptor.FILENAME_FRAG_FAIL;
