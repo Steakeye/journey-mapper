@@ -4,6 +4,7 @@
 
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
+import * as scrape from 'website-scraper';
 import { Journey } from '../core/Journey'
 
 
@@ -20,6 +21,8 @@ module jm.cli {
         (aError?: any): void;
     }
 
+    //const scraper:scrape = ws_scraper;
+
     const emptyString: string = '';
 
     export class NodeAssetAdaptor implements AssetAdaptor {
@@ -33,6 +36,7 @@ module jm.cli {
         }
 
         private static TEMP_ASSET_PATH: string = process.cwd() + '/_temp';
+        private static TEMP_CONTENT_PATH: string = NodeAssetAdaptor.TEMP_ASSET_PATH + '/html';
         private static TEMP_SHARED_ASSET_PATH: string = NodeAssetAdaptor.TEMP_ASSET_PATH + '/assets';
         private static TEMP_SHARED_IMAGE_PATH: string = NodeAssetAdaptor.TEMP_SHARED_ASSET_PATH + '/img';
         private static TEMP_SCREEN_SHOTS_PATH: string = NodeAssetAdaptor.TEMP_SHARED_IMAGE_PATH + '/screenshots';
@@ -81,8 +85,6 @@ module jm.cli {
 
         }
 
-        private screenShotFolderCreated:boolean = false;
-
         public saveScreenShots(aJourney: Journey): Promise<string[]> {
             if (!this.screenShotFolderCreated) {
                 let screenShotPath: string = NodeAssetAdaptor.TEMP_SCREEN_SHOTS_PATH;
@@ -98,9 +100,25 @@ module jm.cli {
 
         public saveCurrentAssets(aStep: StepDTO, aNav: NavigatorAdaptor): Promise<boolean> {
             //TODO - saveCurrentAssets
-            return Promise.reject(false);
+            return aNav.getCurrentUrl().then(
+                (aUrl: string) => {
+                    return scrape(this.makeScraperOptions(aStep, aUrl)).then(() => {
+                        return true
+                    });
+                },
+                (aError: string) => {
+                    return Promise.resolve(false);
+                });
         }
 
+        private screenShotFolderCreated:boolean = false;
+
+        private makeScraperOptions(aStep: StepDTO, aUrl: string): websiteScraper.Options  {
+            return <websiteScraper.Options>{
+                urls: [ { url: aUrl, filename: aStep.id }],
+                directory: NodeAssetAdaptor.TEMP_CONTENT_PATH
+            }
+        }
 
     }
 }

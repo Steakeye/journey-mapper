@@ -62,9 +62,7 @@ declare module 'website-scraper' {
     interface RequestOptions extends websiteScraper.RequestOptions {
         headers: request.Headers
     }
-
-    interface Scrape extends websiteScraper.Scrape {}
-
+    
     var scrape:websiteScraper.Scrape;
 
     export = scrape;
