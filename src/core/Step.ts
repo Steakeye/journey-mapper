@@ -1,4 +1,5 @@
 import { LinkTask } from './LinkTask'
+import { applyPropertiesFromSourceToTarget } from '../core_utils/Obj'
 
 module jm.core {
 
@@ -40,6 +41,9 @@ module jm.core {
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
+
+        private static MEMBERS_KEYS: string[] = ['saveContent'];
+
         private static SCREENSHOT_CUES: ScreenshotCueDictionary  = {
             onLoad: "on_load",
             onInteract: "on_interact"
@@ -93,6 +97,8 @@ module jm.core {
         }
 
         private build(aStep: StepConfig): void {
+            applyPropertiesFromSourceToTarget(Step.MEMBERS_KEYS, aStep, this);
+
             let validatorPath:string = aStep.validator;
 
             if (validatorPath) {
