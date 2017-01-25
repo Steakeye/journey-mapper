@@ -9,7 +9,9 @@
     "selenium-webdriver": "registry:npm/selenium-webdriver#3.0.0-beta-2+20160908165836"
   },
   "devDependencies": {
+    "cheerio": "registry:npm/cheerio#0.20.0+20160422172414",
     "request": "registry:npm/request#2.69.0+20160428223725",
+    "rimraf": "registry:npm/rimraf#2.5.0+20160723033700",
     "website-scraper": "registry:dt/website-scraper#1.2.0+20161101130153"
   }
 }

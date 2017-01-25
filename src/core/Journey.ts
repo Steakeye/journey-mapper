@@ -40,15 +40,6 @@ module jm.core {
         public begin(): Promise<Journey> {
             super.begin();
 
-            /*let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
-                stepResolve: StepResolveCB = this.makeStepResolveHandler(),
-                stepReject: StepRejectCB = this.makeStepRejectHandler();
-
-            queryAsync.then((aQuery:DeferredQuery) => {
-                this.currentStep.begin(aQuery).then(stepResolve, stepReject);
-            }, (aErr: any) => {
-                this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
-            });*/
             return new Promise<Journey>((aOnResolve : JourneyResolveCB, aOnReject: JourneyRejectCB) => {
                 let queryAsync: Promise<DeferredQuery> = this.nav.goTo(this.startURL),
                     stepResolve: StepResolveCB = this.makeStepResolveHandler(aOnResolve, aOnReject),
@@ -60,7 +51,6 @@ module jm.core {
                     this.errorFunc(`${Journey.MSG_FAILED_TO_LOAD} ${this.startURL} - ${aErr}`)
                 });
             });
-            //return Promise.resolve(this);
         }
 
         public getDTO(): JourneyDTO {
@@ -93,7 +83,7 @@ module jm.core {
 
         private buildSteps(aStepsConfigs: StepConfig[]): void {
             aStepsConfigs.forEach((aStep: StepConfig) => {
-                this.steps.push(new Step(aStep, this.nav, this.saver, this.errorFunc));
+                this.steps.push(new Step(aStep, this.idVal, this.nav, this.saver, this.errorFunc));
             });
         }
 

@@ -49,7 +49,7 @@ module jm.core {
             onInteract: "on_interact"
         };
 
-        constructor(aStep: StepConfig, private nav: NavigatorAdaptor, private saver: AssetAdaptor, private errorHandler:BasicErrorHandler) {
+        constructor(aStep: StepConfig, private parentIDVal: string, private nav: NavigatorAdaptor, private saver: AssetAdaptor, private errorHandler:BasicErrorHandler) {
             super(aStep);
 
             this.build(aStep);
@@ -89,6 +89,7 @@ module jm.core {
                 id: this.idVal,
                 title: this.titleVal,
                 description: this.descVal,
+                parentID: this.parentIDVal,
                 started: this.hasStarted,
                 complete: this.isComplete,
                 succeeded: this.hasSuceeded,

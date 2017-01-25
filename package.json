@@ -43,9 +43,11 @@
   "dist": {},
   "dependencies": {
     "@types/es6-promise": "0.0.32",
+    "cheerio": "^0.22.0",
     "commander": "^2.9.0",
     "json-refs": "^2.1.6",
     "mkdirp": "^0.5.1",
+    "rimraf": "^2.5.4",
     "selenium-query": "^0.50.35",
     "selenium-webdriver": "^3.0.1",
     "website-scraper": "^2.0.0"

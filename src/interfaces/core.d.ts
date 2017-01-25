@@ -38,6 +38,7 @@ interface TaskDTO extends ItemConfig, TaskProto {
 }
 
 interface StepDTO extends TaskDTO {
+    parentID?: string;
     screenShots: ImageDTO[]
 }
 
@@ -58,11 +59,12 @@ type DeferredQuery = SQuery| JQuery;
 interface NavigatorAdaptor {
     query: DeferredQuery
     goTo(aUrl: string): Promise<DeferredQuery>;
-    getCurrentUrl(): Promise<string>;
     takeScreenShot(): Promise<string>;
+    getCurrentUrl(): Promise<string>;
+    getCurrentHTML(aQueryEl?: DeferredQuery): Promise<string>;
     sendKey(aQueryEl: DeferredQuery, aKeyToSend: string): Promise<boolean>}
 
 interface AssetAdaptor {
     saveScreenShots<JourneyDTO>(aJourney: JourneyDTO): Promise<string[]>
-    saveCurrentAssets(aStep: StepDTO, aNav: NavigatorAdaptor): Promise<boolean>
+    saveCurrentAssets(aStep: StepDTO, aNav: NavigatorAdaptor, aState?: DeferredQuery): Promise<boolean>
 }

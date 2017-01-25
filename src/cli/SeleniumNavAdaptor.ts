@@ -68,6 +68,10 @@ module jm.cli {
             return this.webDriver.getCurrentUrl();
         }
 
+        public getCurrentHTML(aQueryEl?: DeferredQuery): Promise<string> {
+            return this.webDriver.getPageSource();
+        }
+
         public takeScreenShot(): Promise<string> {
             return this.webDriver.takeScreenshot()
         }
