@@ -4,11 +4,14 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as url from 'url';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
 import * as cheerio from 'cheerio';
 import * as scrape from 'website-scraper';
 import { Journey } from '../core/Journey'
+import {Cheerio} from "cheerio";
+import {accessSync} from "fs";
 
 
 module jm.cli {
@@ -27,9 +30,115 @@ module jm.cli {
     type AssetOriginalSource = string;
     type AssetReMappedSource = string;
     type AssetMapping = [AssetOriginalSource, AssetReMappedSource];
-    //const scraper:scrape = ws_scraper;
+
+    type NodeAssetAttribute = string;
+    type NodeAssetSelector = { selector: string, attr?: NodeAssetAttribute };
+    type NodeAssetStoreDefinition = { directory: string, extensions: string[] };
 
     const emptyString: string = '';
+
+    class NodeAssetPathResovler {
+        private static readonly SELECTOR_SET: NodeAssetSelector[] =  [
+            { selector: 'style' },
+            { selector: '[style]', attr: 'style' },
+            { selector: 'img', attr: 'src' },
+            { selector: 'img', attr: 'srcset' },
+            { selector: 'input', attr: 'src' },
+            { selector: 'object', attr: 'data' },
+            { selector: 'embed', attr: 'src' },
+            { selector: 'param[name="movie"]', attr: 'value' },
+            { selector: 'script', attr: 'src' },
+            { selector: 'link[rel="stylesheet"]', attr: 'href' },
+            { selector: 'link[rel*="icon"]', attr: 'href' },
+            { selector: 'svg *[xlink\\:href]', attr: 'xlink:href' },
+            { selector: 'svg *[href]', attr: 'href' }
+        ];
+        private static readonly ASSET_STORE_DEFINTIONS: NodeAssetStoreDefinition[] = [
+            { directory: 'images', extensions: ['.png', '.jpg', '.jpeg', '.gif'] },
+            { directory: 'js', extensions: ['.js'] },
+            { directory: 'css', extensions: ['.css'] },
+            { directory: 'fonts', extensions: ['.ttf', '.woff', '.woff2', '.eot', '.svg'] }
+        ];
+
+        public static transformSource(aSource: string): [string, AssetMapping[]] {
+            let cheerioDOM:cheerio.Static = cheerio.load(aSource),
+                assetsToMutate: [Cheerio, NodeAssetAttribute][] = this.findElementsToMutate(cheerioDOM),
+                assetMapping: AssetMapping[] = this.mutateElements(assetsToMutate);
+
+            //TODO: We need to iterate over
+            return [cheerioDOM.html(), assetMapping];
+        }
+
+        private static findElementsToMutate(aDOM: cheerio.Static): [Cheerio, NodeAssetAttribute][] {
+            //let selectorsAndElement: [NodeAssetSelector, Cheerio][] =
+             return NodeAssetPathResovler.SELECTOR_SET.map((aSelector: NodeAssetSelector): [Cheerio, NodeAssetAttribute] =>{
+                return [aDOM(aSelector.selector), aSelector.attr];
+            }).filter((aSelectorAndEl:[Cheerio, NodeAssetAttribute]) => !!aSelectorAndEl[0].length);
+
+            //return selectorsAndElement;
+        }
+
+        private static mutateElements(aElementsAndAtributes: [Cheerio, NodeAssetAttribute][]): AssetMapping[]  {
+            let changeList: (AssetMapping | AssetMapping[])[] = aElementsAndAtributes.map((aElAndAttr:[Cheerio, NodeAssetAttribute]):AssetMapping | AssetMapping[] => {
+                let attr: NodeAssetAttribute = aElAndAttr[1],
+                    el: Cheerio = aElAndAttr[0],
+                    oldAndNewMapping: AssetMapping | AssetMapping[];
+
+                if (attr) {
+                    oldAndNewMapping = this.mutateAttributeValue(el, aElAndAttr[1])
+                } else {
+                    oldAndNewMapping = this.mutateElementContent(el)
+                }
+
+                return oldAndNewMapping;
+            }),
+                flatChangeList: AssetMapping[] = [];
+
+            changeList.forEach((aAssetMappings: AssetMapping | AssetMapping[], aIdx: number) => {
+                if (aAssetMappings && aAssetMappings.length) {
+                    if (aAssetMappings.length === 2 &&
+                        typeof aAssetMappings[0] === 'string'&&
+                        typeof aAssetMappings[1] === 'string') {
+                        flatChangeList.push(<AssetMapping>aAssetMappings);
+                    } else {
+                        //We now assume its a list of asset mappings
+                        flatChangeList.push.apply(flatChangeList, aAssetMappings);
+                        //changeList.splice.apply(changeList, (<[number, number, AssetMapping]>[aIdx, 1]).concat(<AssetMapping[]>aAssetMappings))
+                    }
+                }
+            });
+
+            return flatChangeList;
+        }
+
+        private static mutateAttributeValue(aEl: Cheerio, aAttrName: string): AssetMapping {
+            let oldValue: AssetOriginalSource = aEl.attr(aAttrName),
+                newValue: AssetReMappedSource,
+                mapping:AssetMapping;
+
+            if (oldValue) {
+                newValue = this.getNewAttributeValue(oldValue);
+                aEl.attr(aAttrName, newValue);
+                mapping = [oldValue, newValue];
+            }
+
+            return mapping;
+        }
+
+        private static mutateElementContent(aEl: Cheerio): AssetMapping[] {
+            let originalContent = aEl.html(),
+                mapping: AssetMapping[] = [];
+
+            //TODO: find all urls in a string and replace them
+
+            return mapping;
+        }
+
+        private static getNewAttributeValue(aOldValue: string): string {
+            //TODO: resolve url, get last part of path and make relative path for the local content
+            return aOldValue;
+        }
+    }
 
     export class NodeAssetAdaptor implements AssetAdaptor {
         public static saveScreenShots(aJourney: Journey): Promise<string[]> {
@@ -142,7 +251,7 @@ module jm.cli {
         private writeHTMLSource(aSource: string, aDestination: string): Promise<boolean> {
             function writeHTML(aResolve: PromiseResolveCB<boolean, boolean>, aReject: PromiseRejectCB<any>) {
                 fs.writeFile(aDestination, aSource, 'utf8', (aErr: any) => {
-                    if(aErr) {
+                    if (aErr) {
                         aReject(aErr);
                     } else {
                         aResolve(true);
@@ -161,9 +270,13 @@ module jm.cli {
         }
 
         private sanitizeSource(aSource: string): string {
+            let transformedSource: string,
+                sourceMappings: AssetMapping[];
             //TODO: We need to parse the source using cheerio and then return the parsed string
             //Parsing will mutate all resource string in the code to point to local assets
-            return aSource;
+            [transformedSource, sourceMappings] = NodeAssetPathResovler.transformSource(aSource);
+
+            return transformedSource;
         }
 
         private findMissingAssets(aAssetMapping:AssetMapping[]): string[] {
