@@ -5,13 +5,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
+//import * as getUrls from 'get-urls';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
 import * as cheerio from 'cheerio';
 import * as scrape from 'website-scraper';
 import { Journey } from '../core/Journey'
 import {Cheerio} from "cheerio";
-import {accessSync} from "fs";
 
 
 module jm.cli {
@@ -38,18 +38,20 @@ module jm.cli {
     const emptyString: string = '';
 
     class NodeAssetPathResovler {
+        private static KEY_ATTR_STYLE: string = 'style';
+
         private static readonly SELECTOR_SET: NodeAssetSelector[] =  [
-            { selector: 'style' },
-            { selector: '[style]', attr: 'style' },
-            { selector: 'img', attr: 'src' },
-            { selector: 'img', attr: 'srcset' },
-            { selector: 'input', attr: 'src' },
-            { selector: 'object', attr: 'data' },
-            { selector: 'embed', attr: 'src' },
+            { selector: NodeAssetPathResovler.KEY_ATTR_STYLE },
+            { selector: `[${NodeAssetPathResovler.KEY_ATTR_STYLE}]`, attr: NodeAssetPathResovler.KEY_ATTR_STYLE },
+            { selector: 'img[src]', attr: 'src' },
+            { selector: 'img[srcset]', attr: 'srcset' },
+            { selector: 'input[src]', attr: 'src' },
+            { selector: 'object[data]', attr: 'data' },
+            { selector: 'embed[src]', attr: 'src' },
             { selector: 'param[name="movie"]', attr: 'value' },
-            { selector: 'script', attr: 'src' },
-            { selector: 'link[rel="stylesheet"]', attr: 'href' },
-            { selector: 'link[rel*="icon"]', attr: 'href' },
+            { selector: 'script[src]', attr: 'src' },
+            { selector: 'link[rel="stylesheet"][href]', attr: 'href' },
+            { selector: 'link[rel*="icon"][href]', attr: 'href' },
             { selector: 'svg *[xlink\\:href]', attr: 'xlink:href' },
             { selector: 'svg *[href]', attr: 'href' }
         ];
@@ -63,7 +65,7 @@ module jm.cli {
         public static transformSource(aSource: string): [string, AssetMapping[]] {
             let cheerioDOM:cheerio.Static = cheerio.load(aSource),
                 assetsToMutate: [Cheerio, NodeAssetAttribute][] = this.findElementsToMutate(cheerioDOM),
-                assetMapping: AssetMapping[] = this.mutateElements(assetsToMutate);
+                assetMapping: AssetMapping[] = this.mutateElements(assetsToMutate, cheerioDOM);
 
             //TODO: We need to iterate over
             return [cheerioDOM.html(), assetMapping];
@@ -78,26 +80,27 @@ module jm.cli {
             //return selectorsAndElement;
         }
 
-        private static mutateElements(aElementsAndAtributes: [Cheerio, NodeAssetAttribute][]): AssetMapping[]  {
+        private static mutateElements(aElementsAndAtributes: [Cheerio, NodeAssetAttribute][], aDOM: cheerio.Static): AssetMapping[]  {
             let changeList: (AssetMapping | AssetMapping[])[] = aElementsAndAtributes.map((aElAndAttr:[Cheerio, NodeAssetAttribute]):AssetMapping | AssetMapping[] => {
                 let attr: NodeAssetAttribute = aElAndAttr[1],
-                    el: Cheerio = aElAndAttr[0],
+                    elements: Cheerio = aElAndAttr[0], //This is a collection!
                     oldAndNewMapping: AssetMapping | AssetMapping[];
 
-                if (attr) {
-                    oldAndNewMapping = this.mutateAttributeValue(el, aElAndAttr[1])
+                if (!attr || attr === this.KEY_ATTR_STYLE) {
+                    oldAndNewMapping = this.mutateElementContent(elements)
                 } else {
-                    oldAndNewMapping = this.mutateElementContent(el)
+                    oldAndNewMapping = this.mutateElementAttributeValues(elements, aElAndAttr[1], aDOM)
                 }
 
                 return oldAndNewMapping;
             }),
-                flatChangeList: AssetMapping[] = [];
+                flatChangeList: AssetMapping[] = [],
+                originalSourceList: AssetReMappedSource[] = [];
 
             changeList.forEach((aAssetMappings: AssetMapping | AssetMapping[], aIdx: number) => {
                 if (aAssetMappings && aAssetMappings.length) {
                     if (aAssetMappings.length === 2 &&
-                        typeof aAssetMappings[0] === 'string'&&
+                        typeof aAssetMappings[0] === 'string' &&
                         typeof aAssetMappings[1] === 'string') {
                         flatChangeList.push(<AssetMapping>aAssetMappings);
                     } else {
@@ -108,17 +111,41 @@ module jm.cli {
                 }
             });
 
+            //Make changelist free from duplicates
+            flatChangeList = flatChangeList.filter((aAssetMapping: AssetMapping) => {
+                let origin: AssetOriginalSource = aAssetMapping[0],
+                    isUnique: boolean = false;
+
+                if (!(<ModernArray<AssetOriginalSource>>originalSourceList).includes(origin)) {
+                    originalSourceList.push(origin);
+                    isUnique = true;
+                }
+                return isUnique;
+            });
+
             return flatChangeList;
         }
 
-        private static mutateAttributeValue(aEl: Cheerio, aAttrName: string): AssetMapping {
-            let oldValue: AssetOriginalSource = aEl.attr(aAttrName),
+        private static mutateElementAttributeValues(aElements: Cheerio, aAttrName: string, aDOM: cheerio.Static): AssetMapping[] {
+            let mappings:AssetMapping[] = [];
+
+            //mappings = (<any>aElements).map((aIdx: number, aEl: cheerio.Element): AssetMapping  => {
+            /*return*/
+            aElements.each((aIdx: number, aEl: cheerio.Element) => {
+                mappings.push(this.mutateAttributeValue(aDOM(aEl), aAttrName));
+            });
+
+            return mappings;
+        }
+
+        private static mutateAttributeValue(aDomEl: Cheerio, aAttrName: string): AssetMapping {
+            let oldValue: AssetOriginalSource = aDomEl.attr(aAttrName),
                 newValue: AssetReMappedSource,
                 mapping:AssetMapping;
 
             if (oldValue) {
                 newValue = this.getNewAttributeValue(oldValue);
-                aEl.attr(aAttrName, newValue);
+                aDomEl.attr(aAttrName, newValue);
                 mapping = [oldValue, newValue];
             }
 
@@ -129,14 +156,14 @@ module jm.cli {
             let originalContent = aEl.html(),
                 mapping: AssetMapping[] = [];
 
-            //TODO: find all urls in a string and replace them
+            //TODO: Use get-urls lib to find all urls in a string and replace them
 
             return mapping;
         }
 
         private static getNewAttributeValue(aOldValue: string): string {
             //TODO: resolve url, get last part of path and make relative path for the local content
-            return aOldValue;
+            return aOldValue + '_new';
         }
     }
 
