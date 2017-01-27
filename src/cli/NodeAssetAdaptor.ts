@@ -92,7 +92,21 @@ module jm.cli {
             return prettifier.css(aInnerHTML);
         }
 
-        private static getContentModifier(aElements: Cheerio): (aInnerHTML: string) => string  {
+        private static tweakCSSURL(aURL: AssetOriginalSource): AssetOriginalSource {
+            let tweakedURL:AssetOriginalSource,
+                urlSize: number = aURL.length,
+                lastPos: number;
+
+            if (urlSize && aURL.lastIndexOf(');') === (lastPos = urlSize - 2)) {
+                tweakedURL = aURL.substr(0, lastPos);
+            } else {
+                tweakedURL = aURL;
+            }
+
+            return tweakedURL;
+        }
+
+        private static getContentPreModifier(aElements: Cheerio): (aInnerHTML: string) => string  {
             let tagName: string = aElements.get(0).tagName,
                 modifier:(aInnerHTML: string) => string;
 
@@ -100,10 +114,30 @@ module jm.cli {
                 case this.KEY_ATTR_STYLE: {
                     modifier = this.prettifyCSS;
                     break;
-                }case this.KEY_ATTR_STYLE: {
-                    modifier = this.prettifyJS
+                }
+                case this.NAME_TAG_SCRIPT: {
+                    modifier = this.prettifyJS;
                     break;
                 }
+                default:
+            }
+
+            return modifier;
+        }
+
+        private static getContentFragmentPostModifier(aElements: Cheerio): (aInnerHTML: string) => string  {
+            let tagName: string = aElements.get(0).tagName,
+                modifier:(aInnerHTML: string) => string;
+
+            switch (tagName) {
+                case this.KEY_ATTR_STYLE: {
+                    modifier = this.tweakCSSURL;
+                    break;
+                }
+                /*case this.NAME_TAG_SCRIPT: {
+                    modifier = this.prettifyJS;
+                    break;
+                }*/
                 default:
             }
 
@@ -118,8 +152,8 @@ module jm.cli {
                     modifier:(aInnerHTML: string) => string;
 
                 if (!attr || attr === this.KEY_ATTR_STYLE) {
-                    modifier = this.getContentModifier(elements);
-                    oldAndNewMapping = this.mutateElementsContents(elements, aDOM, modifier)
+                    modifier = this.getContentPreModifier(elements);
+                    oldAndNewMapping = this.mutateElementsContents(elements, aDOM, modifier, this.getContentFragmentPostModifier(elements))
                 } else {
                     oldAndNewMapping = this.mutateElementAttributeValues(elements, aElAndAttr[1], aDOM)
                 }
@@ -161,8 +195,6 @@ module jm.cli {
         private static mutateElementAttributeValues(aElements: Cheerio, aAttrName: string, aDOM: cheerio.Static): AssetMapping[] {
             let mappings:AssetMapping[] = [];
 
-            //mappings = (<any>aElements).map((aIdx: number, aEl: cheerio.Element): AssetMapping  => {
-            /*return*/
             aElements.each((aIdx: number, aEl: cheerio.Element) => {
                 mappings.push(this.mutateAttributeValue(aDOM(aEl), aAttrName));
             });
@@ -184,24 +216,19 @@ module jm.cli {
             return mapping;
         }
 
-        private static mutateContent(aDomEl: Cheerio, aModifier?: (aUrl: string) => string): AssetMapping[] {
+        private static mutateContent(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
             let mappings:AssetMapping[],
-                originalInnerHTML: string = ((aInnerContent:string) => aModifier ? aModifier(aInnerContent): aInnerContent)(aDomEl.html()),
+                originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aDomEl.html()),
                 localizedInnerHTML: string = originalInnerHTML,
-                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML),
-                urlList:string[] = (<ModernArrayConstructor>Array).from(urlsToReplace);
+                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
 
-            /*if (aModifier) {
-                urlList = urlList.map(aModifier)
-            }*/
-
-            //mappings = urlsToReplace.values().map((aUrl: string): AssetMapping => {
             mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
-                let localizedValue: AssetReMappedSource = this.getLocalizedValue(aUrl);
+                let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
+                    localizedValue: AssetReMappedSource = this.getLocalizedValue(aUrl);
 
-                localizedInnerHTML = localizedInnerHTML.replace(aUrl, localizedValue);
+                localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
 
-                return [aUrl, localizedValue];
+                return [originalValue, localizedValue];
             });
 
             if (localizedInnerHTML !== originalInnerHTML) {
@@ -211,12 +238,11 @@ module jm.cli {
             return mappings;
         }
 
-        private static mutateElementsContents(aElements: Cheerio, aDOM: cheerio.Static, aModifier?: (aUrl: string) => string): AssetMapping[] {
+        private static mutateElementsContents(aElements: Cheerio, aDOM: cheerio.Static, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
             let mappings: AssetMapping[] = [];
 
-            //TODO: Use get-urls lib to find all urls in a string and replace them
             aElements.each((aIdx: number, aEl: cheerio.Element) => {
-                mappings.push.apply(this.mutateContent(aDOM(aEl), aModifier));
+                mappings.push.apply(this.mutateContent(aDOM(aEl), aPreModifier, aPostModifier));
             });
 
             return mappings;
