@@ -1,5 +1,9 @@
 ///<reference path="../core/Journey.ts"/>
 
+interface ModernArrayConstructor extends ArrayConstructor {
+    from<T>(aIterable: Array<T> | NodeCollection): ModernArray<T>;
+}
+
 interface ModernArray<T> extends Array<T> {
     includes(aVal:T): boolean;
 }

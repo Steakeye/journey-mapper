@@ -1,11 +1,13 @@
 ///<reference path="../interfaces/core.d.ts" />
 ///<reference path="../../custom/definitions/selenium-query.d.ts" />
+///<reference path="../../custom/definitions/get-urls/get-urls.d.ts" />
 ///<reference path="../../typings/index.d.ts" />
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
-//import * as getUrls from 'get-urls';
+import * as getUrls from 'get-urls';
+import * as prettifier from 'js-beautify';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
 import * as cheerio from 'cheerio';
@@ -39,6 +41,7 @@ module jm.cli {
 
     class NodeAssetPathResovler {
         private static KEY_ATTR_STYLE: string = 'style';
+        private static NAME_TAG_SCRIPT: string = 'script';
 
         private static readonly SELECTOR_SET: NodeAssetSelector[] =  [
             { selector: NodeAssetPathResovler.KEY_ATTR_STYLE },
@@ -49,7 +52,8 @@ module jm.cli {
             { selector: 'object[data]', attr: 'data' },
             { selector: 'embed[src]', attr: 'src' },
             { selector: 'param[name="movie"]', attr: 'value' },
-            { selector: 'script[src]', attr: 'src' },
+            { selector: `${NodeAssetPathResovler.NAME_TAG_SCRIPT}[src]`, attr: 'src' },
+            { selector: `${NodeAssetPathResovler.NAME_TAG_SCRIPT}:not([src])` },
             { selector: 'link[rel="stylesheet"][href]', attr: 'href' },
             { selector: 'link[rel*="icon"][href]', attr: 'href' },
             { selector: 'svg *[xlink\\:href]', attr: 'xlink:href' },
@@ -80,14 +84,42 @@ module jm.cli {
             //return selectorsAndElement;
         }
 
+        private static prettifyJS(aInnerHTML: string): string  {
+            return prettifier(aInnerHTML);
+        }
+
+        private static prettifyCSS(aInnerHTML: string): string  {
+            return prettifier.css(aInnerHTML);
+        }
+
+        private static getContentModifier(aElements: Cheerio): (aInnerHTML: string) => string  {
+            let tagName: string = aElements.get(0).tagName,
+                modifier:(aInnerHTML: string) => string;
+
+            switch (tagName) {
+                case this.KEY_ATTR_STYLE: {
+                    modifier = this.prettifyCSS;
+                    break;
+                }case this.KEY_ATTR_STYLE: {
+                    modifier = this.prettifyJS
+                    break;
+                }
+                default:
+            }
+
+            return modifier;
+        }
+
         private static mutateElements(aElementsAndAtributes: [Cheerio, NodeAssetAttribute][], aDOM: cheerio.Static): AssetMapping[]  {
             let changeList: (AssetMapping | AssetMapping[])[] = aElementsAndAtributes.map((aElAndAttr:[Cheerio, NodeAssetAttribute]):AssetMapping | AssetMapping[] => {
                 let attr: NodeAssetAttribute = aElAndAttr[1],
                     elements: Cheerio = aElAndAttr[0], //This is a collection!
-                    oldAndNewMapping: AssetMapping | AssetMapping[];
+                    oldAndNewMapping: AssetMapping | AssetMapping[],
+                    modifier:(aInnerHTML: string) => string;
 
                 if (!attr || attr === this.KEY_ATTR_STYLE) {
-                    oldAndNewMapping = this.mutateElementContent(elements)
+                    modifier = this.getContentModifier(elements);
+                    oldAndNewMapping = this.mutateElementsContents(elements, aDOM, modifier)
                 } else {
                     oldAndNewMapping = this.mutateElementAttributeValues(elements, aElAndAttr[1], aDOM)
                 }
@@ -140,28 +172,57 @@ module jm.cli {
 
         private static mutateAttributeValue(aDomEl: Cheerio, aAttrName: string): AssetMapping {
             let oldValue: AssetOriginalSource = aDomEl.attr(aAttrName),
-                newValue: AssetReMappedSource,
+                localizedValue: AssetReMappedSource,
                 mapping:AssetMapping;
 
             if (oldValue) {
-                newValue = this.getNewAttributeValue(oldValue);
-                aDomEl.attr(aAttrName, newValue);
-                mapping = [oldValue, newValue];
+                localizedValue = this.getLocalizedValue(oldValue);
+                aDomEl.attr(aAttrName, localizedValue);
+                mapping = [oldValue, localizedValue];
             }
 
             return mapping;
         }
 
-        private static mutateElementContent(aEl: Cheerio): AssetMapping[] {
-            let originalContent = aEl.html(),
-                mapping: AssetMapping[] = [];
+        private static mutateContent(aDomEl: Cheerio, aModifier?: (aUrl: string) => string): AssetMapping[] {
+            let mappings:AssetMapping[],
+                originalInnerHTML: string = ((aInnerContent:string) => aModifier ? aModifier(aInnerContent): aInnerContent)(aDomEl.html()),
+                localizedInnerHTML: string = originalInnerHTML,
+                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML),
+                urlList:string[] = (<ModernArrayConstructor>Array).from(urlsToReplace);
 
-            //TODO: Use get-urls lib to find all urls in a string and replace them
+            /*if (aModifier) {
+                urlList = urlList.map(aModifier)
+            }*/
 
-            return mapping;
+            //mappings = urlsToReplace.values().map((aUrl: string): AssetMapping => {
+            mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
+                let localizedValue: AssetReMappedSource = this.getLocalizedValue(aUrl);
+
+                localizedInnerHTML = localizedInnerHTML.replace(aUrl, localizedValue);
+
+                return [aUrl, localizedValue];
+            });
+
+            if (localizedInnerHTML !== originalInnerHTML) {
+                aDomEl.html(localizedInnerHTML);
+            }
+
+            return mappings;
         }
 
-        private static getNewAttributeValue(aOldValue: string): string {
+        private static mutateElementsContents(aElements: Cheerio, aDOM: cheerio.Static, aModifier?: (aUrl: string) => string): AssetMapping[] {
+            let mappings: AssetMapping[] = [];
+
+            //TODO: Use get-urls lib to find all urls in a string and replace them
+            aElements.each((aIdx: number, aEl: cheerio.Element) => {
+                mappings.push.apply(this.mutateContent(aDOM(aEl), aModifier));
+            });
+
+            return mappings;
+        }
+
+        private static getLocalizedValue(aOldValue: AssetOriginalSource): AssetReMappedSource {
             //TODO: resolve url, get last part of path and make relative path for the local content
             return aOldValue + '_new';
         }

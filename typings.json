@@ -13,5 +13,8 @@
     "request": "registry:npm/request#2.69.0+20160428223725",
     "rimraf": "registry:npm/rimraf#2.5.0+20160723033700",
     "website-scraper": "registry:dt/website-scraper#1.2.0+20161101130153"
+  },
+  "globalDevDependencies": {
+    "js-beautify": "registry:dt/js-beautify#0.0.0+20160915014424"
   }
 }
