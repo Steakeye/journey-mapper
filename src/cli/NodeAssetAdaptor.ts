@@ -14,6 +14,7 @@ import * as cheerio from 'cheerio';
 import * as scrape from 'website-scraper';
 import { Journey } from '../core/Journey'
 import {Cheerio} from "cheerio";
+import {ParsedPath} from "path";
 
 
 module jm.cli {
@@ -224,7 +225,7 @@ module jm.cli {
 
             mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
                 let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
-                    localizedValue: AssetReMappedSource = this.getLocalizedValue(aUrl);
+                    localizedValue: AssetReMappedSource = this.getLocalizedValue(originalValue);
 
                 localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
 
@@ -249,6 +250,9 @@ module jm.cli {
         }
 
         private static getLocalizedValue(aOldValue: AssetOriginalSource): AssetReMappedSource {
+            let pathInfo: ParsedPath = path.parse(aOldValue),
+                urlInfo: any = url.parse(aOldValue);
+
             //TODO: resolve url, get last part of path and make relative path for the local content
             return aOldValue + '_new';
         }
