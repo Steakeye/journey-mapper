@@ -179,12 +179,12 @@ module jm.cli {
             let changeList: (AssetMapping | AssetMapping[])[] = aElementsAndAtributes.map((aElAndAttr:[Cheerio, NodeAssetAttribute]):AssetMapping | AssetMapping[] => {
                 let attr: NodeAssetAttribute = aElAndAttr[1],
                     elements: Cheerio = aElAndAttr[0], //This is a collection!
-                    oldAndNewMapping: AssetMapping | AssetMapping[],
-                    modifier:(aInnerHTML: string) => string;
+                    oldAndNewMapping: AssetMapping | AssetMapping[];
 
-                if (!attr || attr === this.KEY_ATTR_STYLE) {
-                    modifier = this.getContentPreModifier(elements);
-                    oldAndNewMapping = this.mutateElementsContents(elements, aDOM, modifier, this.getContentFragmentPostModifier(elements))
+                if (!attr) {
+                    oldAndNewMapping = this.mutateElementsContents(elements, aDOM, this.getContentPreModifier(elements), this.getContentFragmentPostModifier(elements))
+                } else if (attr === this.KEY_ATTR_STYLE) {
+                    oldAndNewMapping = this.mutateElementsStyleAttribute(elements, aDOM, this.prettifyCSS, this.tweakCSSURL)
                 } else {
                     oldAndNewMapping = this.mutateElementAttributeValues(elements, aElAndAttr[1], aDOM)
                 }
@@ -203,7 +203,6 @@ module jm.cli {
                     } else {
                         //We now assume its a list of asset mappings
                         flatChangeList.push.apply(flatChangeList, aAssetMappings);
-                        //changeList.splice.apply(changeList, (<[number, number, AssetMapping]>[aIdx, 1]).concat(<AssetMapping[]>aAssetMappings))
                     }
                 }
             });
@@ -247,8 +246,8 @@ module jm.cli {
             return mapping;
         }
 
-        private static mutateContent(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
-            let mappings:AssetMapping[],
+        private static mutateInnerHTML(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
+            /*let mappings:AssetMapping[],
                 originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aDomEl.html()),
                 localizedInnerHTML: string = originalInnerHTML,
                 urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
@@ -266,6 +265,55 @@ module jm.cli {
                 aDomEl.html(localizedInnerHTML);
             }
 
+            return mappings;*/
+            return this.mutateContent(aDomEl.html(), (aMutatedContent: string) => { aDomEl.html(aMutatedContent); }, aPreModifier, aPostModifier);
+
+        }
+
+        private static mutateStyleAttribute(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
+            /*let mappings:AssetMapping[],
+                originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aDomEl.html()),
+                localizedInnerHTML: string = originalInnerHTML,
+                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
+
+            mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
+                let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
+                    localizedValue: AssetReMappedSource = this.getLocalizedValue(originalValue);
+
+                localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
+
+                return [originalValue, localizedValue];
+            });
+
+            if (localizedInnerHTML !== originalInnerHTML) {
+                aDomEl.html(localizedInnerHTML);
+            }*/
+            let styleKey: string = NodeAssetPathResovler.KEY_ATTR_STYLE;
+
+            return this.mutateContent(aDomEl.attr(styleKey), (aMutatedContent: string) => { aDomEl.attr(styleKey, aMutatedContent); }, aPreModifier, aPostModifier);
+
+            //return mappings;
+        }
+
+        private static mutateContent(aContent: string, aContentSetter:(aMutatedContent: string) => void, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
+            let mappings:AssetMapping[],
+                originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aContent),
+                localizedInnerHTML: string = originalInnerHTML,
+                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
+
+            mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
+                let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
+                    localizedValue: AssetReMappedSource = this.getLocalizedValue(originalValue);
+
+                localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
+
+                return [originalValue, localizedValue];
+            });
+
+            if (localizedInnerHTML !== originalInnerHTML) {
+                aContentSetter(localizedInnerHTML);
+            }
+
             return mappings;
         }
 
@@ -273,7 +321,17 @@ module jm.cli {
             let mappings: AssetMapping[] = [];
 
             aElements.each((aIdx: number, aEl: cheerio.Element) => {
-                mappings.push.apply(this.mutateContent(aDOM(aEl), aPreModifier, aPostModifier));
+                mappings.push.apply(this.mutateInnerHTML(aDOM(aEl), aPreModifier, aPostModifier));
+            });
+
+            return mappings;
+        }
+
+        private static mutateElementsStyleAttribute(aElements: Cheerio, aDOM: cheerio.Static, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
+            let mappings: AssetMapping[] = [];
+
+            aElements.each((aIdx: number, aEl: cheerio.Element) => {
+                mappings.push.apply(this.mutateStyleAttribute(aDOM(aEl), aPreModifier, aPostModifier));
             });
 
             return mappings;
