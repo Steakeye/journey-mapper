@@ -6,7 +6,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
-import * as getUrls from 'get-urls';
+import * as urlGetter from 'get-urls';
 import * as prettifier from 'js-beautify';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
@@ -44,6 +44,13 @@ module jm.cli {
     class NodeAssetPathResovler {
         private static KEY_ATTR_STYLE: string = 'style';
         private static NAME_TAG_SCRIPT: string = 'script';
+
+        private static readonly CONFIG_GET_URLS: getUrls.URLOptions = {
+            normalizeProtocol: false,
+            normalizeHttps: false,
+            stripFragment: false,
+            stripWWW: false
+        };
 
         private static readonly SELECTOR_SET: NodeAssetSelector[] =  [
             { selector: NodeAssetPathResovler.KEY_ATTR_STYLE },
@@ -247,59 +254,20 @@ module jm.cli {
         }
 
         private static mutateInnerHTML(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
-            /*let mappings:AssetMapping[],
-                originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aDomEl.html()),
-                localizedInnerHTML: string = originalInnerHTML,
-                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
-
-            mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
-                let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
-                    localizedValue: AssetReMappedSource = this.getLocalizedValue(originalValue);
-
-                localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
-
-                return [originalValue, localizedValue];
-            });
-
-            if (localizedInnerHTML !== originalInnerHTML) {
-                aDomEl.html(localizedInnerHTML);
-            }
-
-            return mappings;*/
             return this.mutateContent(aDomEl.html(), (aMutatedContent: string) => { aDomEl.html(aMutatedContent); }, aPreModifier, aPostModifier);
-
         }
 
         private static mutateStyleAttribute(aDomEl: Cheerio, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
-            /*let mappings:AssetMapping[],
-                originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aDomEl.html()),
-                localizedInnerHTML: string = originalInnerHTML,
-                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
-
-            mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
-                let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
-                    localizedValue: AssetReMappedSource = this.getLocalizedValue(originalValue);
-
-                localizedInnerHTML = localizedInnerHTML.replace(originalValue, localizedValue);
-
-                return [originalValue, localizedValue];
-            });
-
-            if (localizedInnerHTML !== originalInnerHTML) {
-                aDomEl.html(localizedInnerHTML);
-            }*/
             let styleKey: string = NodeAssetPathResovler.KEY_ATTR_STYLE;
 
             return this.mutateContent(aDomEl.attr(styleKey), (aMutatedContent: string) => { aDomEl.attr(styleKey, aMutatedContent); }, aPreModifier, aPostModifier);
-
-            //return mappings;
         }
 
         private static mutateContent(aContent: string, aContentSetter:(aMutatedContent: string) => void, aPreModifier?: (aUrl: string) => string, aPostModifier?: (aUrl: string) => string): AssetMapping[] {
             let mappings:AssetMapping[],
                 originalInnerHTML: string = ((aInnerContent:string) => aPreModifier ? aPreModifier(aInnerContent): aInnerContent)(aContent),
                 localizedInnerHTML: string = originalInnerHTML,
-                urlsToReplace: Set<AssetOriginalSource> = getUrls(localizedInnerHTML);
+                urlsToReplace: Set<AssetOriginalSource> = urlGetter(localizedInnerHTML, NodeAssetPathResovler.CONFIG_GET_URLS);
 
             mappings = (<ModernArrayConstructor>Array).from(urlsToReplace).map((aUrl: string): AssetMapping => {
                 let originalValue: AssetOriginalSource = aPostModifier ? aPostModifier(aUrl): aUrl,
@@ -359,7 +327,6 @@ module jm.cli {
                 return folderPath;
             }
             //TODO: resolve url, get last part of path and make relative path for the local content
-            //return aOldValue + '_new';
             return `${getAssetFolderPath(pathInfo.ext)}${pathInfo.base}`;
         }
     }

@@ -1,12 +1,12 @@
 declare module getUrls {
     interface URLOptions {
-        normalizeProtocol: boolean;
-        normalizeHttps: boolean;
-        stripFragment: boolean;
-        stripWWW: boolean;
-        removeQueryParameters: Array<RegExp|string>;
-        removeTrailingSlash: boolean;
-        removeDirectoryIndex: boolean | Array<RegExp|string>;
+        normalizeProtocol?: boolean;
+        normalizeHttps?: boolean;
+        stripFragment?: boolean;
+        stripWWW?: boolean;
+        removeQueryParameters?: Array<RegExp|string>;
+        removeTrailingSlash?: boolean;
+        removeDirectoryIndex?: boolean | Array<RegExp|string>;
     }
 
     interface getUrls {
