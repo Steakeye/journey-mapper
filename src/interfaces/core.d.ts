@@ -6,6 +6,7 @@ interface ModernArrayConstructor extends ArrayConstructor {
 
 interface ModernArray<T> extends Array<T> {
     includes(aVal:T): boolean;
+    find(aCallback: (aItem: T) => boolean, aThis?: any): T;
 }
 
 interface ItemConfig {

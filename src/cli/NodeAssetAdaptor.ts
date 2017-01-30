@@ -39,6 +39,7 @@ module jm.cli {
     type NodeAssetStoreDefinition = { directory: string, extensions: string[] };
 
     const emptyString: string = '';
+    const FILE_PATH_FRAG_FOLDER: string = '/';
 
     class NodeAssetPathResovler {
         private static KEY_ATTR_STYLE: string = 'style';
@@ -60,7 +61,7 @@ module jm.cli {
             { selector: 'svg *[xlink\\:href]', attr: 'xlink:href' },
             { selector: 'svg *[href]', attr: 'href' }
         ];
-        private static readonly ASSET_STORE_DEFINTIONS: NodeAssetStoreDefinition[] = [
+        private static readonly ASSET_STORE_DEFINITIONS: NodeAssetStoreDefinition[] = [
             { directory: 'images', extensions: ['.png', '.jpg', '.jpeg', '.gif'] },
             { directory: 'js', extensions: ['.js'] },
             { directory: 'css', extensions: ['.css'] },
@@ -95,10 +96,39 @@ module jm.cli {
 
         private static tweakCSSURL(aURL: AssetOriginalSource): AssetOriginalSource {
             let tweakedURL:AssetOriginalSource,
-                urlSize: number = aURL.length,
+                //urlSize: number = aURL.length,
                 lastPos: number;
 
-            if (urlSize && aURL.lastIndexOf(');') === (lastPos = urlSize - 2)) {
+            function findTrimPosition(aPath: string): number {
+                let bracketChar: string = ')',
+                    colonChar: string = ';',
+                    //bracketColon: string = `${bracketChar}${colonChar}`,
+                    urlSize: number = aPath.length,
+                    lastChar: string,
+                    trimAmount: number,
+                    trimPos: number;
+
+                if(urlSize) {
+                    lastChar = aPath[urlSize - 1];
+
+                    switch (lastChar) {
+                        case bracketChar: {
+                            trimAmount = 1;
+                            break;
+                            }
+                        case colonChar: {
+                            trimAmount = 2;
+                            break;
+                        }
+                    }
+
+                    trimPos = trimAmount ? urlSize - trimAmount: undefined;
+                }
+
+                return trimPos;
+            }
+
+            if ((lastPos = findTrimPosition(aURL))) {
                 tweakedURL = aURL.substr(0, lastPos);
             } else {
                 tweakedURL = aURL;
@@ -251,10 +281,28 @@ module jm.cli {
 
         private static getLocalizedValue(aOldValue: AssetOriginalSource): AssetReMappedSource {
             let pathInfo: ParsedPath = path.parse(aOldValue),
-                urlInfo: any = url.parse(aOldValue);
+                //urlInfo: url.Url = url.parse(aOldValue),
+                //assetFolderPath: string,
+                storeDefintion: NodeAssetStoreDefinition;
 
+            function getAssetFolderPath(aAssetExtention: string): string {
+                let folderPath: string = '';
+
+                if (aAssetExtention) {
+                    storeDefintion = (<ModernArray<NodeAssetStoreDefinition>>NodeAssetPathResovler.ASSET_STORE_DEFINITIONS).find((aStoreDef: NodeAssetStoreDefinition) => {
+                        return (<ModernArray<string>>aStoreDef.extensions).includes(aAssetExtention);
+                    });
+
+                    if(storeDefintion) {
+                        folderPath = `${FILE_PATH_FRAG_FOLDER}${storeDefintion.directory}${FILE_PATH_FRAG_FOLDER}`;
+                    }
+                }
+
+                return folderPath;
+            }
             //TODO: resolve url, get last part of path and make relative path for the local content
-            return aOldValue + '_new';
+            //return aOldValue + '_new';
+            return `${getAssetFolderPath(pathInfo.ext)}${pathInfo.base}`;
         }
     }
 
