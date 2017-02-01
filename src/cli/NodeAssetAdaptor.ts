@@ -44,6 +44,8 @@ module jm.cli {
     class NodeAssetPathResovler {
         private static KEY_ATTR_STYLE: string = 'style';
         private static NAME_TAG_SCRIPT: string = 'script';
+        private static FRAGMENT_PATH_PROTOCOL_HTTP: string = 'http:';
+        private static FRAGMENT_PATH_PROTOCOL_SEPARATOR: string = '//';
 
         private static readonly CONFIG_GET_URLS: getUrls.URLOptions = {
             normalizeProtocol: false,
@@ -306,10 +308,15 @@ module jm.cli {
         }
 
         private static getLocalizedValue(aOldValue: AssetOriginalSource): AssetReMappedSource {
-            let pathInfo: ParsedPath = path.parse(aOldValue),
-                //urlInfo: url.Url = url.parse(aOldValue),
+            let isOldValProtocolAgnostic: boolean = aOldValue.indexOf(this.FRAGMENT_PATH_PROTOCOL_SEPARATOR) === 0;
+                //urlInfo: url.Url = url.parse(isOldValProtocolAgnostic ? this.FRAGMENT_PATH_PROTOCOL_HTTP : '' + aOldValue),
+            let urlInfo: url.Url = url.parse(aOldValue, undefined, isOldValProtocolAgnostic);
+            let parthToParse: string = urlInfo.path;
+            let pathInfo: ParsedPath = parthToParse ? path.parse(urlInfo.path): undefined;
+            let asset: string;
+
                 //assetFolderPath: string,
-                storeDefintion: NodeAssetStoreDefinition;
+            let storeDefintion: NodeAssetStoreDefinition;
 
             function getAssetFolderPath(aAssetExtention: string): string {
                 let folderPath: string = '';
@@ -327,7 +334,7 @@ module jm.cli {
                 return folderPath;
             }
             //TODO: resolve url, get last part of path and make relative path for the local content
-            return `${getAssetFolderPath(pathInfo.ext)}${pathInfo.base}`;
+            return pathInfo && (asset = pathInfo.base) ? `${getAssetFolderPath(pathInfo.ext)}${asset}`: aOldValue;
         }
     }
 
