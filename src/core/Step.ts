@@ -37,7 +37,7 @@ module jm.core {
         private static KEY_VALIDATOR: ImportedMemberKey_Validator = 'validator';
         private static KEY_INTERACTOR: ImportedMemberKey_Interactor = 'interactor';
         private static MSG_MEMBER_NOT_RESOLVED: string = "Imported Step method could not be resolved";
-        private static MSG_ASSET_SAVE_FAILED: string = "Assets for this step were unable to be failed";
+        private static MSG_ASSET_SAVE_FAILED: string = "Assets for this step were unable to be saved";
         private static MSG_INCORRECT_STATE: string = "Current state did not match expected state";
         private static MSG_INTERACTION_FAILED: string = "Interaction for this Step failed";
         private static MSG_INTERACTION_UNSUCCESSFUL: string = "Interaction for this Step occured but the outcome was unsuccessful";
